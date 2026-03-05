@@ -1,6 +1,5 @@
 package com.exercise.soa.service;
 
-import com.exercise.soa.advice.ExceptionControllerAdvice;
 import com.exercise.soa.dto.request.UserRequest;
 import com.exercise.soa.dto.response.UserResponse;
 import com.exercise.soa.mapper.UserMapper;
