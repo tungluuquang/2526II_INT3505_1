@@ -1,0 +1,24 @@
+[
+  {
+    "email": "tungquang@example.com",
+    "fullName": "Tung Quang",
+    "username": "tungquang",
+    "authProvider": "LOCAL",
+    "bio": "Backend developer and student",
+    "avatarUrl": "https://example.com/avatar.jpg",
+    "dateOfBirth": "2003-08-15",
+    "phoneNumber": "0912345678",
+    "darkMode": true
+  },
+  {
+    "email": "hoangpham@example.com",
+    "fullName": "Hoang Pham",
+    "username": "hoangpham",
+    "authProvider": "GITHUB",
+    "bio": "Open source enthusiast and backend developer",
+    "avatarUrl": "https://example.com/avatar3.jpg",
+    "dateOfBirth": "2000-02-14",
+    "phoneNumber": "0987654321",
+    "darkMode": false
+  }
+]
