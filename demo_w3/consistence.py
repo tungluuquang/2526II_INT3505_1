@@ -32,11 +32,22 @@ def api_response(data=None, message="Success", status=200, error=None):
 
 @app.route('/api/v1/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    user = users.query.get(user_id)
+    user = next((u for u in users if u["id"] == user_id), None)    
     if not user:
         return api_response(message="User not found", status=404, error="NOT_FOUND")
-    return api_response(data=user.to_dict())
+    return api_response(data=user)
 
 @app.route('/api/v1/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    user = next((u for u in users if u["id"] == user_id), None)
+
+    if not user:
+        return api_response(
+            message="User not found",
+            status=404,
+            error="NOT_FOUND"
+        )
+
+    users = [u for u in users if u["id"] != user_id]
+    
     return api_response(message="User deleted", status=200)
