@@ -8,8 +8,6 @@ import com.exercise.soa.validation.OnUpdate;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,7 @@ public class UserController {
         return new ResponseEntity<>(userService.create(userRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<UserResponse> update(
             @PathVariable String userId,
             @Validated(OnUpdate.class) @RequestBody UserRequest userRequest) {
@@ -52,4 +50,10 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> allUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
+
+    @GetMapping("/error")
+    public ResponseEntity<String> getError() {
+        throw new RuntimeException("Something went wrong on the server");
+    }
+
 }
