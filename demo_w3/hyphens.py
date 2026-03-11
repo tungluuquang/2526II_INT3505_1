@@ -46,3 +46,6 @@ def get_profiles():
     ]
 
     return api_response(data=profiles)
+
+if __name__ == "__main__":
+    app.run(debug=True)

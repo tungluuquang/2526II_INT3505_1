@@ -91,3 +91,6 @@ def create_user():
         message="User created",
         status=201
     )
+
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -31,3 +31,6 @@ def get_users_bad():
 @app.route("/api/v1/users", methods=["GET"])
 def get_users_good():
     return api_response(data=users)
+
+if __name__ == "__main__":
+    app.run(debug=True)

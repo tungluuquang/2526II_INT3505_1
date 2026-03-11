@@ -60,3 +60,6 @@ def users_v2():
     ]
 
     return api_response(data=users_v2_data)
+
+if __name__ == "__main__":
+    app.run(debug=True)

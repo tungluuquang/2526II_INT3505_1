@@ -49,5 +49,8 @@ def delete_user(user_id):
         )
 
     users = [u for u in users if u["id"] != user_id]
-    
+
     return api_response(message="User deleted", status=200)
+
+if __name__ == "__main__":
+    app.run(debug=True)

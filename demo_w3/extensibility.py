@@ -43,3 +43,6 @@ def get_users():
         filtered_users = [u for u in users if u["status"] == status]
 
     return api_response(data=filtered_users)
+
+if __name__ == "__main__":
+    app.run(debug=True)

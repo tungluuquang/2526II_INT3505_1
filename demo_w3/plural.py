@@ -61,3 +61,6 @@ def get_user(user_id):
         )
 
     return api_response(data=user)
+
+if __name__ == "__main__":
+    app.run(debug=True)
