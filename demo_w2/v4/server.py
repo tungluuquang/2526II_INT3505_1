@@ -7,6 +7,7 @@ users = [
     {"id": 2, "name": "Nam"}
 ]
 
+# cacheable
 @app.route("/")
 def home():
     return "Flask server running"

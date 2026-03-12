@@ -7,6 +7,7 @@ users = [
     {"id": 2, "name": "Nam"}
 ]
 
+# stateless
 @app.route("/")
 def home():
     return "Flask server running"
