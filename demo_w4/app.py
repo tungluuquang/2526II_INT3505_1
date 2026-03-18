@@ -23,10 +23,10 @@ template = {
                 "type": "object",
                 "required": ["id", "title", "author"],
                 "properties": {
-                    "id": {"type": "integer"},
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                    "publishedYear": {"type": "integer"}
+                    "id": {"type": "integer", "example": 1},
+                    "title": {"type": "string", "example": "Hai dua tre"},
+                    "author": {"type": "string", "author": "Thach Lam"},
+                    "publishedYear": {"type": "integer", "publishedYear": 1938}
                 },
                 "example": {
                     "id": 1,
@@ -34,7 +34,7 @@ template = {
                     "author": "Thach Lam",
                     "publishedYear": 1938
                 }
-            }
+            },
 
             "BookInput": {
                 "type": "object",
