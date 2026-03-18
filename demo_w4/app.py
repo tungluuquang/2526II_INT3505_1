@@ -1,6 +1,91 @@
 from flask import Flask, jsonify, request
+from flasgger import Swagger
 
 app = Flask(__name__)
+
+app.config['SWAGGER'] = {
+    'title': 'Book Management API',
+    'uiversion': 3,
+    'openapi': '3.0.0'
+}
+
+template = {
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Book API",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {
+
+            "Book": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                    "publishedYear": {"type": "integer"}
+                }
+            },
+
+            # INPUT
+            "BookInput": {
+                "type": "object",
+                "required": ["title", "author"],
+                "properties": {
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                    "publishedYear": {"type": "integer"}
+                }
+            },
+
+            "BookUpdate": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                    "publishedYear": {"type": "integer"}
+                }
+            },
+
+            # RESPONSE
+            "BookResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {"type": "integer"},
+                    "message": {"type": "string"},
+                    "data": {
+                        "$ref": "#/components/schemas/Book"
+                    },
+                    "error": {
+                        "type": "string",
+                        "nullable": True
+                    }
+                }
+            },
+
+            "BookListResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {"type": "integer"},
+                    "message": {"type": "string"},
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Book"
+                        }
+                    },
+                    "error": {
+                        "type": "string",
+                        "nullable": True
+                    }
+                }
+            }
+        }
+    }
+}
+
+swagger = Swagger(app, template=template)
 
 books = [
     {"id": 1, "title": "Ho Quy Ly", "author": "Nguyen Xuan Khanh", "publishedYear": 2000},
@@ -20,21 +105,80 @@ def api_response(data=None, message="Success", status=200, error=None):
     }), status
 
 
+# GET ALL BOOKS
 @app.route('/api/v1/books', methods=['GET'])
 def get_books():
+    """
+    Lấy danh sách tất cả sách
+    ---
+    tags:
+      - Books
+    responses:
+      200:
+        description: Thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookListResponse'
+    """
     return api_response(data=books)
 
 
+# GET ONE BOOK
 @app.route('/api/v1/books/<int:book_id>', methods=['GET'])
 def get_book(book_id):
+    """
+    Lấy thông tin chi tiết sách
+    ---
+    tags:
+      - Books
+    parameters:
+      - name: book_id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: ID sách
+    responses:
+      200:
+        description: Thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookResponse'
+      404:
+        description: Không tìm thấy
+    """
     book = next((b for b in books if b["id"] == book_id), None)
     if book:
         return api_response(data=book)
     return api_response(message="Book not found", status=404, error="NOT_FOUND")
 
 
+# CREATE BOOK
 @app.route('/api/v1/books', methods=['POST'])
 def create_book():
+    """
+    Thêm sách mới
+    ---
+    tags:
+      - Books
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BookInput'
+    responses:
+      201:
+        description: Tạo thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookResponse'
+      400:
+        description: Lỗi dữ liệu
+    """
     global current_id
     data = request.get_json()
 
@@ -54,8 +198,36 @@ def create_book():
     return api_response(data=new_book, message="Created", status=201)
 
 
+# UPDATE BOOK
 @app.route('/api/v1/books/<int:book_id>', methods=['PUT'])
 def update_book(book_id):
+    """
+    Cập nhật sách
+    ---
+    tags:
+      - Books
+    parameters:
+      - name: book_id
+        in: path
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BookUpdate'
+    responses:
+      200:
+        description: Thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookResponse'
+      404:
+        description: Không tìm thấy
+    """
     data = request.get_json()
     book = next((b for b in books if b["id"] == book_id), None)
 
@@ -70,8 +242,26 @@ def update_book(book_id):
     return api_response(message="Book not found", status=404, error="NOT_FOUND")
 
 
+# DELETE BOOK 
 @app.route('/api/v1/books/<int:book_id>', methods=['DELETE'])
 def delete_book(book_id):
+    """
+    Xóa sách
+    ---
+    tags:
+      - Books
+    parameters:
+      - name: book_id
+        in: path
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: Xóa thành công
+      404:
+        description: Không tìm thấy
+    """
     global books
     initial_length = len(books)
     books = [b for b in books if b["id"] != book_id]
@@ -83,4 +273,4 @@ def delete_book(book_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000) 
