@@ -23,26 +23,10 @@ template = {
                 "type": "object",
                 "required": ["id", "title", "author"],
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "ID của sách"
-                    },
-                    "title": {
-                        "type": "string",
-                        "example": "Hai dua tre",
-                        "description": "Tên sách"
-                    },
-                    "author": {
-                        "type": "string",
-                        "example": "Thach Lam",
-                        "description": "Tác giả"
-                    },
-                    "publishedYear": {
-                        "type": "integer",
-                        "example": 1938,
-                        "description": "Năm xuất bản"
-                    }
+                    "id": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                    "publishedYear": {"type": "integer"}
                 },
                 "example": {
                     "id": 1,
@@ -50,7 +34,7 @@ template = {
                     "author": "Thach Lam",
                     "publishedYear": 1938
                 }
-            },
+            }
 
             "BookInput": {
                 "type": "object",
