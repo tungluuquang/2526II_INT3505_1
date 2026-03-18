@@ -13,53 +13,100 @@ template = {
     "openapi": "3.0.0",
     "info": {
         "title": "Book API",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "description": "API quản lý sách đơn giản sử dụng Flask + Swagger"
     },
     "components": {
         "schemas": {
 
             "Book": {
                 "type": "object",
+                "required": ["id", "title", "author"],
                 "properties": {
-                    "id": {"type": "integer"},
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                    "publishedYear": {"type": "integer"}
+                    "id": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "ID của sách"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Hai dua tre",
+                        "description": "Tên sách"
+                    },
+                    "author": {
+                        "type": "string",
+                        "example": "Thach Lam",
+                        "description": "Tác giả"
+                    },
+                    "publishedYear": {
+                        "type": "integer",
+                        "example": 1938,
+                        "description": "Năm xuất bản"
+                    }
+                },
+                "example": {
+                    "id": 1,
+                    "title": "Hai dua tre",
+                    "author": "Thach Lam",
+                    "publishedYear": 1938
                 }
             },
 
-            # INPUT
             "BookInput": {
                 "type": "object",
                 "required": ["title", "author"],
                 "properties": {
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                    "publishedYear": {"type": "integer"}
+                    "title": {
+                        "type": "string",
+                        "example": "Doraemon"
+                    },
+                    "author": {
+                        "type": "string",
+                        "example": "Fujiko F Fujio"
+                    },
+                    "publishedYear": {
+                        "type": "integer",
+                        "example": 1970
+                    }
                 }
             },
 
             "BookUpdate": {
                 "type": "object",
                 "properties": {
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                    "publishedYear": {"type": "integer"}
+                    "title": {
+                        "type": "string",
+                        "example": "Updated title"
+                    },
+                    "author": {
+                        "type": "string",
+                        "example": "Updated author"
+                    },
+                    "publishedYear": {
+                        "type": "integer",
+                        "example": 2020
+                    }
                 }
             },
 
-            # RESPONSE
             "BookResponse": {
                 "type": "object",
                 "properties": {
-                    "status": {"type": "integer"},
-                    "message": {"type": "string"},
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
                     "data": {
                         "$ref": "#/components/schemas/Book"
                     },
                     "error": {
                         "type": "string",
-                        "nullable": True
+                        "nullable": True,
+                        "example": None
                     }
                 }
             },
@@ -67,8 +114,14 @@ template = {
             "BookListResponse": {
                 "type": "object",
                 "properties": {
-                    "status": {"type": "integer"},
-                    "message": {"type": "string"},
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
                     "data": {
                         "type": "array",
                         "items": {
@@ -77,7 +130,8 @@ template = {
                     },
                     "error": {
                         "type": "string",
-                        "nullable": True
+                        "nullable": True,
+                        "example": None
                     }
                 }
             }
