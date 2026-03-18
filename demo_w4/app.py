@@ -25,8 +25,8 @@ template = {
                 "properties": {
                     "id": {"type": "integer", "example": 1},
                     "title": {"type": "string", "example": "Hai dua tre"},
-                    "author": {"type": "string", "author": "Thach Lam"},
-                    "publishedYear": {"type": "integer", "publishedYear": 1938}
+                    "author": {"type": "string", "example": "Thach Lam"},
+                    "publishedYear": {"type": "integer", "example": 1938}
                 },
                 "example": {
                     "id": 1,
