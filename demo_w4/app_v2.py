@@ -58,8 +58,18 @@ template = {
                                 }
                             }
                         }
+                    }, 
+                    "400": {
+                        "description": "Dữ liệu không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResponse" 
+                                }
+                            }
+                        }
                     }
-                }
+                } 
             }
         },
 
@@ -82,7 +92,14 @@ template = {
                         }
                     },
                     "404": {
-                        "description": "Không tìm thấy"
+                    "description": "Không tìm thấy",
+                    "content": {
+                        "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/BookResponse"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -113,6 +130,16 @@ template = {
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy",
+                        "content": {
+                            "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookResponse"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -125,10 +152,24 @@ template = {
                 ],
                 "responses": {
                     "200": {
-                        "description": "Xóa thành công"
+                    "description": "Xóa thành công",
+                    "content": {
+                        "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/BookResponse"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Không tìm thấy"
+                    "description": "Không tìm thấy",
+                    "content": {
+                        "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/BookResponse"
+                                }
+                            }
+                        }
                     }
                 }
             }
