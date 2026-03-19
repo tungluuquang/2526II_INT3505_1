@@ -1,3 +1,4 @@
+import yaml
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 
@@ -9,257 +10,217 @@ app.config['SWAGGER'] = {
     'openapi': '3.0.0'
 }
 
-template = {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Book API V2",
-        "version": "2.0.0",
-        "description": "API quản lý sách"
-    },
-    "servers": [
-        {
-            "url": "http://localhost:5000",
-            "description": "Local dev server"
-        }
-    ],
-    "tags": [
-        {
-            "name": "Books",
-            "description": "API quản lý sách Swagger"
-        }
-    ],
+template_str = """
+openapi: 3.0.0
+info:
+  title: Book API V2
+  version: 2.0.0
+  description: API quản lý sách
 
-    "paths": {
-        "/api/v2/books": {
-            "get": {
-                "tags": ["Books"],
-                "summary": "Lấy danh sách sách",
-                "responses": {
-                    "200": {
-                        "description": "Thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BookListResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": ["Books"],
-                "summary": "Tạo sách mới",
-                "requestBody": {
-                    "required": True,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BookInput"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Tạo thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    }, 
-                    "400": {
-                        "description": "Dữ liệu không hợp lệ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BookResponse" 
-                                }
-                            }
-                        }
-                    }
-                } 
-            }
-        },
+servers:
+  - url: http://localhost:5000
+    description: Local dev server
 
-        "/api/v2/books/{book_id}": {
-            "get": {
-                "tags": ["Books"],
-                "summary": "Lấy chi tiết sách",
-                "parameters": [
-                    {"$ref": "#/components/parameters/BookId"}
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                    "description": "Không tìm thấy",
-                    "content": {
-                        "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+tags:
+  - name: Books
+    description: API quản lý sách Swagger
 
-            "put": {
-                "tags": ["Books"],
-                "summary": "Cập nhật sách",
-                "parameters": [
-                    {"$ref": "#/components/parameters/BookId"}
-                ],
-                "requestBody": {
-                    "required": True,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BookUpdate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Cập nhật thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Không tìm thấy",
-                        "content": {
-                            "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+paths:
+  /api/v2/books:
+    get:
+      tags:
+        - Books
+      summary: Lấy danh sách sách
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookListResponse"
 
-            "delete": {
-                "tags": ["Books"],
-                "summary": "Xóa sách",
-                "parameters": [
-                    {"$ref": "#/components/parameters/BookId"}
-                ],
-                "responses": {
-                    "200": {
-                    "description": "Xóa thành công",
-                    "content": {
-                        "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                    "description": "Không tìm thấy",
-                    "content": {
-                        "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/BookResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
+    post:
+      tags:
+        - Books
+      summary: Tạo sách mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "201":
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "400":
+          description: Dữ liệu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
 
-    "components": {
+  /api/v2/books/{book_id}:
+    get:
+      tags:
+        - Books
+      summary: Lấy chi tiết sách
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
 
-        "schemas": {
-            "Book": {
-                "type": "object",
-                "required": ["id", "title", "author"],
-                "properties": {
-                    "id": {"type": "integer", "example": 1},
-                    "title": {"type": "string", "example": "Hai dua tre"},
-                    "author": {"type": "string", "example": "Thach Lam"},
-                    "publishedYear": {"type": "integer", "example": 1938}
-                }
-            },
+    put:
+      tags:
+        - Books
+      summary: Cập nhật sách
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookUpdate"
+      responses:
+        "200":
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
 
-            "BookInput": {
-                "type": "object",
-                "required": ["title", "author"],
-                "properties": {
-                    "title": {"type": "string", "example": "Doraemon"},
-                    "author": {"type": "string", "example": "Fujiko F Fujio"},
-                    "publishedYear": {"type": "integer", "example": 1970}
-                }
-            },
+    delete:
+      tags:
+        - Books
+      summary: Xóa sách
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      responses:
+        "200":
+          description: Xóa thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
 
-            "BookUpdate": {
-                "type": "object",
-                "properties": {
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                    "publishedYear": {"type": "integer"}
-                }
-            },
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - author
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Hai dua tre
+        author:
+          type: string
+          example: Thach Lam
+        publishedYear:
+          type: integer
+          example: 1938
 
-            "BookResponse": {
-                "type": "object",
-                "properties": {
-                    "status": {"type": "integer", "example": 200},
-                    "message": {"type": "string", "example": "Success"},
-                    "data": {"$ref": "#/components/schemas/Book"},
-                    "error": {"type": "string", "nullable": True}
-                }
-            },
+    BookInput:
+      type: object
+      required:
+        - title
+        - author
+      properties:
+        title:
+          type: string
+          example: Doraemon
+        author:
+          type: string
+          example: Fujiko F Fujio
+        publishedYear:
+          type: integer
+          example: 1970
 
-            "BookListResponse": {
-                "type": "object",
-                "properties": {
-                    "status": {"type": "integer", "example": 200},
-                    "message": {"type": "string", "example": "Success"},
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Book"
-                        }
-                    },
-                    "error": {"type": "string", "nullable": True}
-                }
-            }
-        },
+    BookUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        publishedYear:
+          type: integer
 
-        "parameters": {
-            "BookId": {
-                "name": "book_id",
-                "in": "path",
-                "required": True,
-                "schema": {
-                    "type": "integer"
-                },
-                "description": "ID của sách"
-            }
-        }
-    }
-}
+    BookResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: "#/components/schemas/Book"
+        error:
+          type: string
+          nullable: true
+
+    BookListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+        error:
+          type: string
+          nullable: true
+
+  parameters:
+    BookId:
+      name: book_id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: ID của sách
+"""
+
+template = yaml.safe_load(template_str)
 
 swagger = Swagger(app, template=template)
 
@@ -349,4 +310,4 @@ def delete_book(book_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000) 
+    app.run(debug=True, port=5000)
