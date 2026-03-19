@@ -14,8 +14,20 @@ template = {
     "info": {
         "title": "Book API V2",
         "version": "2.0.0",
-        "description": "API quản lý sách chuẩn OpenAPI đầy đủ"
+        "description": "API quản lý sách"
     },
+    "servers": [
+        {
+            "url": "http://localhost:5000",
+            "description": "Local dev server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Books",
+            "description": "API quản lý sách Swagger"
+        }
+    ],
 
     "paths": {
         "/api/v2/books": {
