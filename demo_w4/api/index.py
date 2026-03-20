@@ -2,7 +2,7 @@ import yaml
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None, template_folder=None)
 
 app.config['SWAGGER'] = {
     'title': 'Book Management API V2',
@@ -334,4 +334,4 @@ def home():
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
-# app = app
+app = app
