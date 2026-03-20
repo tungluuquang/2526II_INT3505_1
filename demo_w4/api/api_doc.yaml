@@ -1,0 +1,218 @@
+openapi: 3.0.0
+
+info:
+  title: Book Management API V2
+  description: API quản lý sách
+  version: "2.0.0"
+
+servers:
+  - url: "http://localhost:5000"
+    description: Local development server
+  - url: "https://your-app.vercel.app"
+    description: Vercel deployment server (thay bằng URL thật)
+
+tags:
+  - name: Books
+    description: Các thao tác quản lý sách
+
+paths:
+  /api/v2/books:
+    get:
+      tags:
+        - Books
+      summary: Lấy danh sách sách
+      operationId: getAllBooks
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookListResponse"
+
+    post:
+      tags:
+        - Books
+      summary: Tạo sách mới
+      operationId: createBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "201":
+          description: Tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "400":
+          description: Dữ liệu không hợp lệ
+
+  /api/v2/books/{book_id}:
+    get:
+      tags:
+        - Books
+      summary: Lấy chi tiết sách
+      operationId: getBookById
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+
+    put:
+      tags:
+        - Books
+      summary: Cập nhật toàn bộ sách
+      operationId: updateBook
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "200":
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+
+    patch:
+      tags:
+        - Books
+      summary: Cập nhật một phần sách
+      operationId: patchBook
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookUpdate"
+      responses:
+        "200":
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+
+    delete:
+      tags:
+        - Books
+      summary: Xóa sách
+      operationId: deleteBook
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+      responses:
+        "200":
+          description: Xóa thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResponse"
+        "404":
+          description: Không tìm thấy
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "abc-123"
+        title:
+          type: string
+          example: Hai dua tre
+        author:
+          type: string
+          example: Thach Lam
+        publishedYear:
+          type: integer
+          example: 1938
+
+    BookInput:
+      type: object
+      required:
+        - title
+        - author
+      properties:
+        title:
+          type: string
+          example: Doraemon
+        author:
+          type: string
+          example: Fujiko F Fujio
+        publishedYear:
+          type: integer
+          example: 1970
+
+    BookUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        publishedYear:
+          type: integer
+
+    BookResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        data:
+          $ref: "#/components/schemas/Book"
+        error:
+          type: string
+          nullable: true
+
+    BookListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Success
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+        error:
+          type: string
+          nullable: true
+
+  parameters:
+    BookId:
+      name: book_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: ID của sách
