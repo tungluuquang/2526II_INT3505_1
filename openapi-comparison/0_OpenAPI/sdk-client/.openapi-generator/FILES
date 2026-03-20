@@ -1,0 +1,12 @@
+apis/DefaultApi.ts
+apis/index.ts
+docs/Book.md
+docs/BookInput.md
+docs/DefaultApi.md
+docs/ModelError.md
+index.ts
+models/Book.ts
+models/BookInput.ts
+models/ModelError.ts
+models/index.ts
+runtime.ts

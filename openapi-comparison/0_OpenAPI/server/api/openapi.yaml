@@ -1,0 +1,140 @@
+openapi: 3.1.0
+info:
+  title: Library API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /books:
+    get:
+      operationId: booksGET
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookList"
+          description: OK
+      summary: Lấy danh sách sách
+      x-eov-operation-handler: controllers/DefaultController
+    post:
+      operationId: booksPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          description: Created
+      summary: Thêm sách
+      x-eov-operation-handler: controllers/DefaultController
+  /books/{id}:
+    delete:
+      operationId: booksIdDELETE
+      parameters:
+      - $ref: "#/components/parameters/BookId"
+      responses:
+        "204":
+          description: No Content
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Xóa sách
+      x-eov-operation-handler: controllers/DefaultController
+    get:
+      operationId: booksIdGET
+      parameters:
+      - $ref: "#/components/parameters/BookId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Lấy chi tiết sách
+      x-eov-operation-handler: controllers/DefaultController
+    put:
+      operationId: booksIdPUT
+      parameters:
+      - $ref: "#/components/parameters/BookId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Cập nhật sách
+      x-eov-operation-handler: controllers/DefaultController
+components:
+  parameters:
+    BookId:
+      explode: false
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      style: simple
+  responses:
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Resource not found
+  schemas:
+    Book:
+      example:
+        author: author
+        id: id
+        title: title
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+      required:
+      - author
+      - id
+      - title
+    BookInput:
+      example:
+        author: author
+        title: title
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+      required:
+      - author
+      - title
+    BookList:
+      items:
+        $ref: "#/components/schemas/Book"
+      type: array
+    Error:
+      example:
+        message: message
+      properties:
+        message:
+          type: string

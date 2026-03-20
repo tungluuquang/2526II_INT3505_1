@@ -1,0 +1,127 @@
+openapi: 3.1.0
+info:
+  title: Library API
+  version: 1.0.0
+
+paths:
+  /books:
+    get:
+      summary: Lấy danh sách sách
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+
+    post:
+      summary: Thêm sách
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+
+  /books/{id}:
+    get:
+      summary: Lấy chi tiết sách
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+    put:                                          # ← THÊM: Update
+      summary: Cập nhật sách
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        404:
+          $ref: '#/components/responses/NotFound'
+          
+    delete:
+      summary: Xóa sách
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        204:
+          description: No Content
+        404:
+          $ref: '#/components/responses/NotFound'
+
+components:
+
+  schemas:
+    Book:
+      type: object
+      required: [id, title, author]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+
+    BookInput:
+      type: object
+      required: [title, author]
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+
+    BookList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+  parameters:
+    BookId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
