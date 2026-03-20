@@ -2,8 +2,16 @@ import yaml
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flask_cors import CORS
+from flask import make_response
+
 app = Flask(__name__, static_folder=None, template_folder=None)
 CORS(app)
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
 app.config['SWAGGER'] = {
     'title': 'Book Management API V2',
     'uiversion': 3,
@@ -242,6 +250,11 @@ components:
 template = yaml.safe_load(template_str)
 
 swagger = Swagger(app, template=template)
+
+@app.route("/apispec_1.json")
+@cross_origin()
+def swagger_spec():
+    return swagger.get_apispecs()
 
 books = [
     {"id": 1, "title": "Ho Quy Ly", "author": "Nguyen Xuan Khanh", "publishedYear": 2000},
