@@ -322,7 +322,10 @@ def delete_book(book_id):
 
     return api_response(message="Book not found", status=404, error="NOT_FOUND")
 
-
+@app.route('/')
+def home():
+    return jsonify({"message": "API is running", "swagger": "/apidocs/"})
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
