@@ -8,7 +8,7 @@ info:
 servers:
   - url: "http://localhost:5000"
     description: Local development server
-  - url: "https://2526-ii-int-3505-1-nodtgxn5c-tungluuquangs-projects.vercel.app"
+  - url: "https://2526-ii-int-3505-1-xi.vercel.app"
     description: Vercel deployment server (thay bằng URL thật)
 
 tags:
