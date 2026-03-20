@@ -29,11 +29,10 @@ info:
   description: API quản lý sách
 
 servers:
-  - url: https://2526-ii-int-3505-1-41v9d2qr8-tungluuquangs-projects.vercel.app
-    description: Production Server (Vercel)
   - url: http://localhost:5000
     description: Local Development Server
-
+  - url: https://2526-ii-int-3505-1-41v9d2qr8-tungluuquangs-projects.vercel.app
+    description: Production Server (Vercel)
 tags:
   - name: Books
     description: API quản lý sách Swagger
