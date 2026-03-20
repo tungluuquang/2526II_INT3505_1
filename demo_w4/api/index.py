@@ -10,6 +10,9 @@ app.config['SWAGGER'] = {
     'openapi': '3.0.0'
 }
 
+# servers:
+#   - url: http://localhost:5000
+#     description: Local dev server
 template_str = """
 openapi: 3.0.0
 info:
@@ -17,9 +20,6 @@ info:
   version: 2.0.0
   description: API quản lý sách
 
-servers:
-  - url: http://localhost:5000
-    description: Local dev server
 
 tags:
   - name: Books
@@ -325,8 +325,8 @@ def delete_book(book_id):
 @app.route('/')
 def home():
     return jsonify({"message": "API is running", "swagger": "/apidocs/"})
-    
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+
+# if __name__ == '__main__':
+#     app.run(debug=True, port=5000)
 
 app = app
