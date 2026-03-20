@@ -1,0 +1,33 @@
+{
+  "name": "openapi-comparison",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@stoplight/prism-cli": "^5.14.2",
+    "@typespec/compiler": "^1.10.0",
+    "@typespec/http": "^1.10.0",
+    "@typespec/openapi3": "^1.10.0",
+    "@typespec/rest": "^0.80.0",
+    "concurrently": "^9.2.1",
+    "drakov": "^2.0.1",
+    "raml-mock-service": "^1.0.0",
+    "raml-tester": "^0.8.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.30.2",
+    "@types/express": "^5.0.6",
+    "aglio": "^2.3.0",
+    "dredd": "^14.1.0",
+    "express": "^5.2.1",
+    "zod": "^4.3.6"
+  }
+}
