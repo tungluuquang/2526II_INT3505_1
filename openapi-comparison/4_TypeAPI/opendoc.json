@@ -1,0 +1,130 @@
+{
+  "operations": {
+    "getBooks": {
+      "method": "GET",
+      "path": "/books",
+      "return": {
+        "type": "array",
+        "items": {
+          "$ref": "Book"
+        }
+      }
+    },
+    "addBook": {
+      "method": "POST",
+      "path": "/books",
+      "arguments": {
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "BookInput"
+          }
+        }
+      },
+      "return": {
+        "$ref": "Book"
+      }
+    },
+    "getBookById": {
+      "method": "GET",
+      "path": "/books/:id",
+      "arguments": {
+        "id": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        }
+      },
+      "return": {
+        "$ref": "Book"
+      },
+      "throws": [
+        {
+          "$ref": "Error"
+        }
+      ]
+    },
+    "updateBook": {
+      "method": "PUT",
+      "path": "/books/:id",
+      "arguments": {
+        "id": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "BookInput"
+          }
+        }
+      },
+      "return": {
+        "$ref": "Book"
+      },
+      "throws": [
+        {
+          "$ref": "Error"
+        }
+      ]
+    },
+    "deleteBook": {
+      "method": "DELETE",
+      "path": "/books/:id",
+      "arguments": {
+        "id": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        }
+      },
+      "return": {
+        "type": "any"
+      },
+      "throws": [
+        {
+          "$ref": "Error"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Book": {
+      "type": "struct",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        }
+      }
+    },
+    "BookInput": {
+      "type": "struct",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "struct",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
