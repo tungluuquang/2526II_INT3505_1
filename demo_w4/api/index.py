@@ -1,9 +1,9 @@
 import yaml
 from flask import Flask, jsonify, request
 from flasgger import Swagger
-
+from flask_cors import CORS
 app = Flask(__name__, static_folder=None, template_folder=None)
-
+CORS(app)
 app.config['SWAGGER'] = {
     'title': 'Book Management API V2',
     'uiversion': 3,
@@ -21,7 +21,7 @@ info:
   description: API quản lý sách
 
 servers:
-  - url: http://2526-ii-int-3505-1-41v9d2qr8-tungluuquangs-projects.vercel.app
+  - url: https://2526-ii-int-3505-1-41v9d2qr8-tungluuquangs-projects.vercel.app
     description: Production Server (Vercel)
   - url: http://localhost:5000
     description: Local Development Server
