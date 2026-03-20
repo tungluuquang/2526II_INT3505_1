@@ -1,0 +1,122 @@
+FORMAT: 1A
+HOST: http://localhost:3000/api/v2
+
+# 📚 Library API
+
+API quản lý thư viện (Books, Members, Loans)
+
+---
+
+# Group Books
+
+## Danh sách sách [/books]
+
+### Lấy danh sách sách [GET]
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array[Book])
+
+---
+
+### Thêm sách [POST]
+
++ Request (application/json; charset=utf-8)
+    + Attributes (BookInput)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (Book)
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+---
+
+## Chi tiết sách [/books/{id}]
+
++ Parameters
+    + id: `book-123` (string, required)
+
+---
+
+### Lấy chi tiết sách [GET]
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (Book)
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+---
+
+### Xóa sách [DELETE]
+
++ Response 204
+
++ Response 404 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+---
+
+# Group Members
+
+## Danh sách thành viên [/members]
+
+### Lấy danh sách thành viên [GET]
+
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (array[Member])
+
+---
+
+### Tạo thành viên [POST]
+
++ Request (application/json; charset=utf-8)
+    + Attributes (Member)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (Member)
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+---
+
+# Group Loans
+
+## Mượn sách [/loans]
+
+### Mượn sách [POST]
+
++ Request (application/json; charset=utf-8)
+    + Attributes (Loan)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (Loan)
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+---
+
+# Data Structures
+
+## Book (object)
++ id: `book-123` (string)
++ title: `Lập trình Node.js` (string)
++ author: `Nguyễn Văn A` (string)
+
+## BookInput (object)
++ title: `Lập trình Node.js` (string)
++ author: `Nguyễn Văn A` (string)
+
+## Member (object)
++ id: `mem-456` (string)
++ name: `Trần Thị B` (string)
+
+## Loan (object)
++ id: `loan-789` (string)
++ bookId: `book-123` (string)
++ memberId: `mem-456` (string)
+
+## Error (object)
++ message: `Not found` (string)
