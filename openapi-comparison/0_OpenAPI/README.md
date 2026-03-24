@@ -86,9 +86,9 @@ Mở các file trong `server/services/` và thay thế `throw new Error('Not imp
 server/
 ├── controllers/       # Route handlers (không cần sửa)
 ├── services/
-│   ├── BooksService.js    ← viết logic ở đây
-│   ├── MembersService.js  ← viết logic ở đây
-│   └── LoansService.js    ← viết logic ở đây
+│   ├── DefaultService.js    ← viết logic ở đây
+│   ├── index.js  ← viết logic ở đây
+│   └── Service.js    ← viết logic ở đây
 └── index.js
 ```
 

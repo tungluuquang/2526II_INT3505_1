@@ -90,19 +90,6 @@ Hoặc import `api.raml` vào **Postman** để test trực quan hơn.
   - Môi trường sử dụng MuleSoft / Anypoint
 
 ---
-
-## So sánh nhanh
-
-| Tiêu chí | RAML | OpenAPI |
-|---|---|---|
-| Dễ đọc | Tốt | Khó hơn |
-| Tái sử dụng | Mạnh | Trung bình |
-| Generate code | Hạn chế | Mạnh |
-| Ecosystem | Nhỏ | Rất lớn |
-| Mock server | Ít tool | Nhiều tool |
-
----
-
 ## Kết luận
 
 RAML là lựa chọn tốt khi:
