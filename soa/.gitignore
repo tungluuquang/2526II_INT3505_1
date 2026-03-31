@@ -35,3 +35,7 @@ build/
 .env
 
 dummy.json
+
+/demo_w5/venv/
+
+/demo_w6/venv/
