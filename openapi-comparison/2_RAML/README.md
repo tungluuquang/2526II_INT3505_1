@@ -12,15 +12,7 @@ Yêu cầu:
 
 ## 2. Xem tài liệu API
 
-### Cách 1: Anypoint Platform (MuleSoft) — online
-
-1. Truy cập [https://anypoint.mulesoft.com/](https://anypoint.mulesoft.com/)
-2. Vào **API Designer**
-3. Import file `api.raml`
-4. Xem giao diện documentation trực quan
-
-
-### Cách 2: raml2html (local)
+raml2html (local)
 
 **Cài đặt:**
 ```bash
