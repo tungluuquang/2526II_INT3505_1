@@ -166,6 +166,12 @@ def refresh():
 def get_books(user):
     return jsonify({"message": "Xem danh sách sách"})
 
+@app.route('/books', methods=['POST'])
+@token_required
+@scope_required(["write"])
+def create_books(user):
+    return jsonify({"message": "Tạo sách mới"})
+
 @app.route('/logout', methods=['POST'])
 def logout():
     token = request.json.get("refresh_token")
@@ -181,12 +187,6 @@ def logout():
 @role_required(["admin"])
 def admin_route(user):
     return jsonify({"message": "Chào mừng admin"})
-
-@app.route('/admin-only', methods=['GET'])
-@token_required
-@role_required(["admin"])
-def admin_only(user):
-    return jsonify({"message": "Chỉ admin"})
 
     
 if __name__ == '__main__':
