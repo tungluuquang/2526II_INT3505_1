@@ -93,4 +93,4 @@ TypeSpec phù hợp cho:
 * Dự án cần mở rộng lớn
 * Kết hợp với OpenAPI để tự động hóa toàn bộ pipeline
 
-👉 Đây là hướng hiện đại hơn so với viết OpenAPI YAML thủ công.
+Đây là hướng hiện đại hơn so với viết OpenAPI YAML thủ công.
