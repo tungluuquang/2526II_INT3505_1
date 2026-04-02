@@ -55,13 +55,13 @@ def generate_tokens(user):
         "role": user["role"],
         "exp": now + datetime.timedelta(minutes=15)
     }
-    access_token = jwt.encode(payload, SECRET_KEY, algorithm=[ALGORITHM])
+    access_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     refresh_payload = {
         "id": user["id"],
         "exp": now + datetime.timedelta(days=7)
     }
-    refresh_token = jwt.encode(refresh_payload, SECRET_KEY, algorithm=[ALGORITHM])
+    refresh_token = jwt.encode(refresh_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return access_token, refresh_token
 
@@ -119,7 +119,7 @@ def refresh():
         "exp": now + datetime.timedelta(minutes=15)
     }
 
-    new_access_token = jwt.encode(new_payload, SECRET_KEY, algorithm=[ALGORITHM])
+    new_access_token = jwt.encode(new_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return jsonify({"access_token": new_access_token})
 
