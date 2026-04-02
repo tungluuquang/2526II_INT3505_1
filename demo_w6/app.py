@@ -52,14 +52,6 @@ def token_required(f):
 
     return decorated
 
-def admin_required(f):
-    @wraps(f)
-    def decorated(user, *args, **kwargs):
-        if user.get("role") != "admin":
-            return jsonify({"message": "Cấm truy cập: Chỉ dành cho Admin"}), 403
-        return f(user, *args, **kwargs)
-    return decorated
-
 def scope_required(required_scopes):
     def decorator(f):
         @wraps(f)
@@ -160,6 +152,7 @@ def refresh():
     new_payload = {
         "id": user["id"],
         "role": user["role"], 
+        "scopes": user["scopes"],
         "exp": now + datetime.timedelta(minutes=15)
     }
 
@@ -184,8 +177,8 @@ def logout():
 
 @app.route('/admin', methods=['GET'])
 @token_required
-@admin_required
 @scope_required(["admin"])
+@role_required(["admin"])
 def admin_route(user):
     return jsonify({"message": "Chào mừng admin"})
 
