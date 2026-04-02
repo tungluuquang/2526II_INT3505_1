@@ -96,6 +96,5 @@ RAML là lựa chọn tốt khi:
 
 - Muốn thiết kế API rõ ràng, có cấu trúc
 - Tái sử dụng định nghĩa (`types`, `traits`) tốt
-- Làm việc trong hệ sinh thái MuleSoft / Anypoint
 
 Tuy nhiên, với hệ thống lớn hoặc cần tự động hóa cao (generate code, test, CI/CD), **OpenAPI** vẫn là lựa chọn phổ biến hơn.

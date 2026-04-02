@@ -28,10 +28,6 @@
 
 Truy cập [Swagger Editor](https://editor.swagger.io/), chọn **File > Import File** và tải file `openapi.yaml` lên để xem giao diện tra cứu trực quan.
 
-### Cách 2: Xem trong VS Code
-
-Cài đặt extension **"Swagger Viewer"** hoặc **"OpenAPI Editor"**. Sau đó mở file `.yaml` và nhấn `Shift + Alt + P` để xem bản preview ngay lập tức.
-
 ---
 
 ## 3. Chạy Mock Server (API ảo cho Frontend)
