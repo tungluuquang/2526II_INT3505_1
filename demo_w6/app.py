@@ -8,9 +8,22 @@ app = Flask(__name__)
 
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-default-key")
 ALGORITHM = "HS256"
+
 USERS = [
-    {"id": 1, "username": "admin", "password": "123456", "role": "admin"},
-    {"id": 2, "username": "user", "password": "123456", "role": "user"}
+    {
+        "id": 1,
+        "username": "admin",
+        "password": "123456",
+        "role": "admin",
+        "scopes": ["read", "write", "delete", "admin"]
+    },
+    {
+        "id": 2,
+        "username": "user",
+        "password": "123456",
+        "role": "user",
+        "scopes": ["read"]
+    }
 ]
 
 refresh_tokens = []
@@ -47,12 +60,43 @@ def admin_required(f):
         return f(user, *args, **kwargs)
     return decorated
 
+def scope_required(required_scopes):
+    def decorator(f):
+        @wraps(f)
+        def decorated(user, *args, **kwargs):
+            user_scopes = user.get("scopes", [])
+
+            if not any(scope in user_scopes for scope in required_scopes):
+                return jsonify({
+                    "message": f"Thiếu quyền. Cần một trong các scope: {required_scopes}"
+                }), 403
+
+            return f(user, *args, **kwargs)
+        return decorated
+    return decorator
+
+def role_required(required_roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated(user, *args, **kwargs):
+            user_role = user.get("role")
+
+            if user_role not in required_roles:
+                return jsonify({
+                    "message": f"Không đủ quyền. Cần role: {required_roles}"
+                }), 403
+
+            return f(user, *args, **kwargs)
+        return decorated
+    return decorator
+
 def generate_tokens(user):
     now = datetime.datetime.now(datetime.timezone.utc)
     
     payload = {
         "id": user["id"],
         "role": user["role"],
+        "scopes": user["scopes"],
         "exp": now + datetime.timedelta(minutes=15)
     }
     access_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -103,7 +147,7 @@ def refresh():
         user_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
         if token in refresh_tokens:
-            refresh_tokens.remove(token) # Xóa token rác
+            refresh_tokens.remove(token) 
         return jsonify({"message": "Refresh token đã hết hạn. Vui lòng đăng nhập lại."}), 403
     except jwt.InvalidTokenError:
         return jsonify({"message": "Refresh token không hợp lệ"}), 403
@@ -123,6 +167,12 @@ def refresh():
 
     return jsonify({"access_token": new_access_token})
 
+@app.route('/books', methods=['GET'])
+@token_required
+@scope_required(["read"])
+def get_books(user):
+    return jsonify({"message": "Xem danh sách sách"})
+
 @app.route('/logout', methods=['POST'])
 def logout():
     token = request.json.get("refresh_token")
@@ -135,8 +185,16 @@ def logout():
 @app.route('/admin', methods=['GET'])
 @token_required
 @admin_required
+@scope_required(["admin"])
 def admin_route(user):
     return jsonify({"message": "Chào mừng admin"})
 
+@app.route('/admin-only', methods=['GET'])
+@token_required
+@role_required(["admin"])
+def admin_only(user):
+    return jsonify({"message": "Chỉ admin"})
+
+    
 if __name__ == '__main__':
     app.run(debug=True)
