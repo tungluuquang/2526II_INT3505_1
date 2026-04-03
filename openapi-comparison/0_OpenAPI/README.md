@@ -76,7 +76,7 @@ npx openapi-generator-cli generate \
 
 **Bước 4 — Điền logic vào services (sau khi gen):**
 
-Mở các file trong `server/services/` và thay thế `throw new Error('Not implemented')` bằng logic thực tế:
+Mở các file trong `server/services/`
 
 ```
 server/
@@ -95,8 +95,7 @@ npm install
 npm start
 ```
 
-Server sẽ chạy tại `http://localhost:3000`. Các endpoint trả về `501 Not Implemented` cho đến khi bạn điền logic vào `services/`.
-
+Server sẽ chạy tại `http://localhost:8080`.
 ---
 
 ## 5. Tự động sinh Test
@@ -109,8 +108,7 @@ pip install schemathesis
 **Bước 2 — Chạy test tự động đối với Mock Server:**
 ```bash
 schemathesis run openapi.yaml \
-  --url=http://127.0.0.1:4010 \
-  --validate-schema=false
+  --url=http://127.0.0.1:4010 
 ```
 
 > **Lưu ý:** Cần khởi động Mock Server (bước 3) trước khi chạy test.

@@ -21,7 +21,7 @@ npm install -g raml2html
 
 **Render ra file HTML:**
 ```bash
-raml2html api.raml > index.html
+raml2html file.raml > index.html
 ```
 
 Mở `index.html` trong trình duyệt để xem docs.
@@ -45,7 +45,7 @@ npm install -g osprey-mock-service
 
 **Chạy mock server:**
 ```bash
-osprey-mock-service -f api.raml -p 3000 --cors
+osprey-mock-service -f file.raml -p 3000 --cors
 ```
 
 Server sẽ chạy tại `http://localhost:3000`.

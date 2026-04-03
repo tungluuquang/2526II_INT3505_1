@@ -26,14 +26,7 @@ Yêu cầu:
 
 ## 2. Xem tài liệu API
 
-### Cách 1: Online (Apiary) — nhanh nhất
-
-1. Truy cập [https://apiary.io/](https://apiary.io/)
-2. Tạo API mới
-3. Dán nội dung `api.apib`
-4. Xem giao diện documentation trực quan
-
-### Cách 2: Local (Aglio)
+### Cách 1: Local (Aglio)
 
 **Cài đặt:**
 ```bash
@@ -42,17 +35,17 @@ npm install -g aglio
 
 **Render ra file HTML:**
 ```bash
-aglio -i api.apib -o index.html
+aglio -i apiblueprint.apib -o index.html
 ```
 
 Mở `index.html` trong trình duyệt để xem docs.
 
 **Hoặc xem trực tiếp trên trình duyệt (live server):**
 ```bash
-aglio -i api.apib --server 8080
+aglio -i apiblueprint.apib --server
 ```
 
-Truy cập `http://localhost:8080` để xem docs.
+Truy cập `http://localhost:3000` để xem docs.
 
 ---
 
@@ -60,23 +53,16 @@ Truy cập `http://localhost:8080` để xem docs.
 
 API Blueprint hỗ trợ mock server thông qua **Dredd** hoặc **Apiary mock online**.
 
-### Cách 1: Apiary Mock (online, không cần cài đặt)
-
-Sau khi import `api.apib` lên Apiary, mock server được cung cấp sẵn tại URL dạng:
-```
-https://<your-api>.apiary-mock.com
-```
-
-### Cách 2: Dredd (local)
+### Cách 1: Dredd (local)
 
 **Cài đặt:**
 ```bash
 npm install -g dredd
 ```
-
+dredd init -r apiary -j apiaryApiKey:1109ed617f9b0bfa1dbd1d3b900e94b2 -j apiaryApiName:demosoa
 **Chạy mock + test cùng lúc:**
 ```bash
-dredd api.apib http://localhost:3000
+dredd apiblueprint.apib http://localhost:3000
 ```
 
 > **Lưu ý:** Dredd không phải mock server thuần — nó chạy test contract so khớp request/response với server thật. Cần có backend đang chạy tại `http://localhost:3000`.
@@ -121,3 +107,7 @@ API Blueprint là lựa chọn tốt để:
 - Mock API online không cần cài đặt
 
 Tuy nhiên, với hệ thống lớn hoặc cần tự động hóa cao, nên sử dụng **OpenAPI**.
+
+***Can install mock server***
+npm install -g drakov
+drakov -f apiblueprint.apib
