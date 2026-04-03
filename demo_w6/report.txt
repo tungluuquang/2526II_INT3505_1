@@ -1,0 +1,23 @@
+quang-tung@quang-tung-Vostro-3520:~/IdeaProjects/2526II_INT3505_1$ echo "--- OFFSET-BASED ---"
+time curl -s "http://127.0.0.1:5000/api/offset?offset=999990&limit=10" > /dev/null
+--- OFFSET-BASED ---
+
+real    0m0,116s
+user    0m0,009s
+sys     0m0,005s
+quang-tung@quang-tung-Vostro-3520:~/IdeaProjects/2526II_INT3505_1$ echo -e "\n--- PAGE-BASED ---"
+time curl -s "http://127.0.0.1:5000/api/page?page=100000&per_page=10" > /dev/null
+
+--- PAGE-BASED ---
+
+real    0m0,149s
+user    0m0,006s
+sys     0m0,008s
+quang-tung@quang-tung-Vostro-3520:~/IdeaProjects/2526II_INT3505_1$ echo -e "\n--- CURSOR-BASED ---"
+time curl -s "http://127.0.0.1:5000/api/cursor?last_id=999990&limit=10" > /dev/null
+
+--- CURSOR-BASED ---
+
+real    0m0,020s
+user    0m0,008s
+sys     0m0,008s
