@@ -58,20 +58,14 @@ curl http://127.0.0.1:4010/books
 npm install -g @openapitools/openapi-generator-cli
 ```
 
-**Bước 2 — Sinh Client SDK (TypeScript):**
+**Bước 2 — Sinh Client SDK:**
 ```bash
-npx openapi-generator-cli generate \
-  -i openapi.yaml \
-  -g typescript-fetch \
-  -o ./sdk-client
+npx openapi-generator-cli generate -i openapi.yaml -g python -o ./python-client
 ```
 
-**Bước 3 — Sinh Server Stub (Node.js + Express):**
+**Bước 3 — Sinh Server Stub:**
 ```bash
-npx openapi-generator-cli generate \
-  -i openapi.yaml \
-  -g nodejs-express-server \
-  -o ./server
+npx openapi-generator-cli generate -i openapi.yaml -g python-flask -o ./flask-server
 ```
 
 **Bước 4 — Điền logic vào services (sau khi gen):**
