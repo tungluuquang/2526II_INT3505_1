@@ -3,97 +3,97 @@ HOST: http://localhost:3000/api/v2
 
 # Library API
 
-API quản lý thư viện (Books, Members, Loans)
+API for managing library resources including Books, Members, and Loans.
 
 ---
 
 # Group Books
 
-## Danh sách sách [/books]
+## Books Collection [/books]
 
-### Lấy danh sách sách [GET]
+### List All Books [GET]
 
-+ Response 200 (application/json; charset=utf-8)
++ Response 200 (application/json)
     + Attributes (array[Book])
 
 ---
 
-### Thêm sách [POST]
+### Create a New Book [POST]
 
-+ Request (application/json; charset=utf-8)
++ Request (application/json)
     + Attributes (BookInput)
 
-+ Response 201 (application/json; charset=utf-8)
++ Response 201 (application/json)
     + Attributes (Book)
 
-+ Response 400 (application/json; charset=utf-8)
++ Response 400 (application/json)
     + Attributes (Error)
 
 ---
 
-## Chi tiết sách [/books/{id}]
+## Book Details [/books/{id}]
 
 + Parameters
-    + id: `book-123` (string, required)
+    + id: `book-123` (string, required) - The unique identifier of the book.
 
 ---
 
-### Lấy chi tiết sách [GET]
+### Get Book Details [GET]
 
-+ Response 200 (application/json; charset=utf-8)
++ Response 200 (application/json)
     + Attributes (Book)
 
-+ Response 404 (application/json; charset=utf-8)
++ Response 404 (application/json)
     + Attributes (Error)
 
 ---
 
-### Xóa sách [DELETE]
+### Delete a Book [DELETE]
 
 + Response 204
 
-+ Response 404 (application/json; charset=utf-8)
++ Response 404 (application/json)
     + Attributes (Error)
 
 ---
 
 # Group Members
 
-## Danh sách thành viên [/members]
+## Members Collection [/members]
 
-### Lấy danh sách thành viên [GET]
+### List All Members [GET]
 
-+ Response 200 (application/json; charset=utf-8)
++ Response 200 (application/json)
     + Attributes (array[Member])
 
 ---
 
-### Tạo thành viên [POST]
+### Create a Member [POST]
 
-+ Request (application/json; charset=utf-8)
++ Request (application/json)
     + Attributes (Member)
 
-+ Response 201 (application/json; charset=utf-8)
++ Response 201 (application/json)
     + Attributes (Member)
 
-+ Response 400 (application/json; charset=utf-8)
++ Response 400 (application/json)
     + Attributes (Error)
 
 ---
 
 # Group Loans
 
-## Mượn sách [/loans]
+## Loans Collection [/loans]
 
-### Mượn sách [POST]
+### Create a Loan [POST]
 
-+ Request (application/json; charset=utf-8)
++ Request (application/json)
     + Attributes (Loan)
 
-+ Response 201 (application/json; charset=utf-8)
++ Response 201 (application/json)
     + Attributes (Loan)
 
-+ Response 400 (application/json; charset=utf-8)
++ Response 400 (application/json)
     + Attributes (Error)
 
 ---
@@ -102,16 +102,16 @@ API quản lý thư viện (Books, Members, Loans)
 
 ## Book (object)
 + id: `book-123` (string)
-+ title: `Lập trình Node.js` (string)
-+ author: `Nguyễn Văn A` (string)
++ title: `Node.js Programming` (string)
++ author: `John Doe` (string)
 
 ## BookInput (object)
-+ title: `Lập trình Node.js` (string)
-+ author: `Nguyễn Văn A` (string)
++ title: `Node.js Programming` (string)
++ author: `John Doe` (string)
 
 ## Member (object)
 + id: `mem-456` (string)
-+ name: `Trần Thị B` (string)
++ name: `Alice Smith` (string)
 
 ## Loan (object)
 + id: `loan-789` (string)
@@ -119,4 +119,4 @@ API quản lý thư viện (Books, Members, Loans)
 + memberId: `mem-456` (string)
 
 ## Error (object)
-+ message: `Not found` (string)
++ message: `Resource not found` (string)

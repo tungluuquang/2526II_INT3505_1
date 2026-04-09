@@ -39,14 +39,14 @@ def token_required(f):
         try:
             parts = auth_header.split()
             if len(parts) != 2 or parts[0] != "Bearer":
-                return jsonify({"message": "Header Authorization không hợp lệ"}), 401
+                return jsonify({"message": "Header Authorization khong hop le"}), 401
             
             token = parts[1]
             data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         except jwt.ExpiredSignatureError:
-            return jsonify({"message": "Token đã hết hạn"}), 401
+            return jsonify({"message": "Token da het han"}), 401
         except jwt.InvalidTokenError:
-            return jsonify({"message": "Token không hợp lệ"}), 403
+            return jsonify({"message": "Token khong hop le"}), 403
 
         return f(data, *args, **kwargs)
 
@@ -60,7 +60,7 @@ def scope_required(required_scopes):
 
             if not any(scope in user_scopes for scope in required_scopes):
                 return jsonify({
-                    "message": f"Thiếu quyền. Cần một trong các scope: {required_scopes}"
+                    "message": f"Thieu quyen. Can mot trong cac scope: {required_scopes}"
                 }), 403
 
             return f(user, *args, **kwargs)
@@ -75,7 +75,7 @@ def role_required(required_roles):
 
             if user_role not in required_roles:
                 return jsonify({
-                    "message": f"Không đủ quyền. Cần role: {required_roles}"
+                    "message": f"Khong du quyen. Can role: {required_roles}"
                 }), 403
 
             return f(user, *args, **kwargs)
@@ -108,7 +108,7 @@ def login():
     user = next((u for u in USERS if u["username"] == data.get("username") and u["password"] == data.get("password")), None)
 
     if not user:
-        return jsonify({"message": "Sai tài khoản hoặc mật khẩu"}), 401
+        return jsonify({"message": "Sai tai khoan hoac mat khau"}), 401
 
     access_token, refresh_token = generate_tokens(user)
     
@@ -123,7 +123,7 @@ def login():
 @token_required
 def profile(user_data):
     return jsonify({
-        "message": "Truy cập thành công",
+        "message": "Truy cap thanh cong",
         "user": user_data
     })
 
@@ -133,20 +133,20 @@ def refresh():
     token = data.get("refresh_token")
 
     if not token or token not in refresh_tokens:
-        return jsonify({"message": "Refresh token không hợp lệ hoặc bị thiếu"}), 403
+        return jsonify({"message": "Refresh token khong hop le hoac bi thieu"}), 403
 
     try:
         user_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
         if token in refresh_tokens:
             refresh_tokens.remove(token) 
-        return jsonify({"message": "Refresh token đã hết hạn. Vui lòng đăng nhập lại."}), 403
+        return jsonify({"message": "Refresh token da het han, vui long dang nhap lai."}), 403
     except jwt.InvalidTokenError:
-        return jsonify({"message": "Refresh token không hợp lệ"}), 403
+        return jsonify({"message": "Refresh token khong hop le"}), 403
 
     user = next((u for u in USERS if u["id"] == user_data["id"]), None)
     if not user:
-        return jsonify({"message": "Người dùng không còn tồn tại"}), 404
+        return jsonify({"message": "Nguoi dung khong ton tai"}), 404
 
     now = datetime.datetime.now(datetime.timezone.utc)
     new_payload = {
@@ -164,13 +164,13 @@ def refresh():
 @token_required
 @scope_required(["read"])
 def get_books(user):
-    return jsonify({"message": "Xem danh sách sách"})
+    return jsonify({"message": "Xem danh sach sach"})
 
 @app.route('/books', methods=['POST'])
 @token_required
-@scope_required(["write"])
+@role_required(["admin"])
 def create_books(user):
-    return jsonify({"message": "Tạo sách mới"})
+    return jsonify({"message": "Tao sach moi"})
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -179,14 +179,14 @@ def logout():
     if token in refresh_tokens:
         refresh_tokens.remove(token)
 
-    return jsonify({"message": "Đăng xuất thành công"})
+    return jsonify({"message": "Dang xuat thanh cong"})
 
 @app.route('/admin', methods=['GET'])
 @token_required
 @scope_required(["admin"])
 @role_required(["admin"])
 def admin_route(user):
-    return jsonify({"message": "Chào mừng admin"})
+    return jsonify({"message": "Chao mung admin"})
 
     
 if __name__ == '__main__':

@@ -1,22 +1,14 @@
-"""
-OAuth 2.0 Authorization Code Grant — Flask Demo
-================================================
-Mô phỏng đầy đủ 5 bước: cả Client App lẫn Authorization Server
-đều chạy trên cùng một process để dễ quan sát.
-
-Chạy:  python app.py
-Mở:    http://localhost:5000
-"""
-
 import os, secrets, hashlib, base64, time, json
 from functools import wraps
 from urllib.parse import urlencode, urlparse, parse_qs
-
+import jwt 
+import datetime
 from flask import (Flask, request, redirect, url_for,
                    session, render_template, abort, jsonify, g)
 
 app = Flask(__name__)
-app.secret_key = "demo-secret-key-DO-NOT-USE-IN-PROD"
+app.secret_key = os.getenv("SECRET_KEY", "super-secret-default-key")
+JWT_SECRET_KEY = os.getenv("JWT_SECRETKEY", "this-is-a-secret")
 
 REGISTERED_CLIENTS = {
     "my-flask-client": {
@@ -34,7 +26,7 @@ USERS = {
 
 # In-memory stores
 AUTH_CODES   = {}   # code  → {client_id, redirect_uri, user, scopes, expires}
-ACCESS_TOKENS = {}  # token → {client_id, user, scopes, expires}
+# ACCESS_TOKENS = {}  # token → {client_id, user, scopes, expires}
 
 # Helper: sinh token ngẫu nhiên
 def gen_token(n=32):
@@ -236,14 +228,30 @@ def oauth_token():
     if code_data["redirect_uri"] != redirect_uri:
         return jsonify(error="invalid_grant", desc="redirect_uri không khớp"), 400
 
-    access_token  = gen_token(32)
-    refresh_token = gen_token(32)
-    ACCESS_TOKENS[access_token] = {
-        "client_id": client_id,
-        "user":      code_data["user"],
-        "scopes":    code_data["scopes"],
-        "expires":   time.time() + 3600,
+    # access_token  = gen_token(32)
+    # refresh_token = gen_token(32)
+    # ACCESS_TOKENS[access_token] = {
+    #     "client_id": client_id,
+    #     "user":      code_data["user"],
+    #     "scopes":    code_data["scopes"],
+    #     "expires":   time.time() + 3600,
+    # }
+
+    # return jsonify(
+    #     access_token=access_token,
+    #     refresh_token=refresh_token,
+    #     token_type="Bearer",
+    #     expires_in=3600,
+    #     scope=" ".join(code_data["scopes"]),
+    # )
+    payload = {
+        "sub": code_data["user"],               # subject: Tên user
+        "scopes": code_data["scopes"],          # Quyền hạn
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1) # Hạn 1 tiếng
     }
+    
+    access_token = jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
+    refresh_token = gen_token(32) 
 
     return jsonify(
         access_token=access_token,
@@ -253,49 +261,47 @@ def oauth_token():
         scope=" ".join(code_data["scopes"]),
     )
 
-
 # Bước 5: Resource API
 @app.route("/api/userinfo")
 def api_userinfo():
-    """BƯỚC 5 — Resource Server trả thông tin user sau khi xác thực token."""
+    """BƯỚC 5 — Resource Server xác thực JWT (Hoàn toàn Stateless)."""
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
         return jsonify(error="missing_token"), 401
 
     token = auth_header.split(" ", 1)[1]
-    token_data = ACCESS_TOKENS.get(token)
 
-    if not token_data:
-        return jsonify(error="invalid_token"), 401
-    if time.time() > token_data["expires"]:
-        ACCESS_TOKENS.pop(token, None)
+    # +++ BẮT ĐẦU GIẢI MÃ JWT +++
+    try:
+        # Hàm decode này sẽ tự động kiểm tra chữ ký (nhờ JWT_SECRET_KEY)
+        # và TỰ ĐỘNG kiểm tra luôn hạn sử dụng (trường "exp")
+        token_data = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        # Nếu token hết hạn, PyJWT tự quăng lỗi này
         return jsonify(error="token_expired"), 401
+    except jwt.InvalidTokenError:
+        # Nếu ai đó cố tình sửa chữ trong token -> mộc giả -> quăng lỗi này
+        return jsonify(error="invalid_token"), 401
 
-    user = USERS[token_data["user"]]
-    response = {"sub": token_data["user"]}
-    if "profile" in token_data["scopes"]:
+    # Nếu chạy qua được đoạn try-except trên, tức là token xịn 100%
+    # Ta bóc thông tin user trực tiếp từ token_data mà KHÔNG CẦN HỎI DATABASE
+    username = token_data["sub"]
+    scopes = token_data["scopes"]
+
+    user = USERS.get(username)
+    if not user:
+        return jsonify(error="user_not_found"), 404
+
+    response = {"sub": username}
+    if "profile" in scopes:
         response["name"] = user["name"]
-    if "email" in token_data["scopes"]:
+    if "email" in scopes:
         response["email"] = user["email"]
-    response["scopes_granted"] = token_data["scopes"]
+    response["scopes_granted"] = scopes
+    
     return jsonify(response)
 
 
-# ─── Debug: xem raw stores ────────────────────
-@app.route("/debug")
-def debug():
-    """Xem trạng thái internal (chỉ dùng khi dev)."""
-    return jsonify(
-        auth_codes={k: {**v, "expires": f"+{v['expires']-time.time():.0f}s"}
-                    for k, v in AUTH_CODES.items()},
-        access_tokens={k[:12]+"…": {**v, "expires": f"+{v['expires']-time.time():.0f}s"}
-                       for k, v in ACCESS_TOKENS.items()},
-    )
-
-
-# ──────────────────────────────────────────────
-# Utility: ghi log bước vào session
-# ──────────────────────────────────────────────
 def _log_step(step_no, title, detail):
     steps = session.get("steps", [])
     steps.append({"step": step_no, "title": title, "detail": detail,
