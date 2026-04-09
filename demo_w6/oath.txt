@@ -1,0 +1,30 @@
+cách demo Oath2 tự code:
+
+b1: giả lập user đăng nhập
+
+curl -i -X POST http://localhost:5000/oauth/authorize \
+  -d "client_id=my-flask-client" \
+  -d "redirect_uri=http://localhost:5000/callback" \
+  -d "state=random_state_123" \
+  -d "scope=profile email" \
+  -d "username=alice" \
+  -d "password=1234" \
+  -d "action=allow"
+
+lấy code ở phần Location
+
+B2: đổi code lấy access token
+
+curl -X POST http://localhost:5000/oauth/token \
+  -d "grant_type=authorization_code" \
+  -d "code=YOUR_CODE_HERE" \
+  -d "redirect_uri=http://localhost:5000/callback" \
+  -d "client_id=my-flask-client" \
+  -d "client_secret=super-secret"
+
+lấy cái access_token
+
+B3: Lấy thông tin từ access_token
+
+curl -X GET http://localhost:5000/api/userinfo \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE"
