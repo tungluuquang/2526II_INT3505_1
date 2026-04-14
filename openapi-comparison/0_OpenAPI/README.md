@@ -58,17 +58,12 @@ curl http://127.0.0.1:4010/books
 npm install -g @openapitools/openapi-generator-cli
 ```
 
-**Bước 2 — Sinh Client SDK:**
-```bash
-npx openapi-generator-cli generate -i openapi.yaml -g python -o ./python-client
-```
-
-**Bước 3 — Sinh Server Stub:**
+**Bước 2 — Sinh Server Stub:**
 ```bash
 npx openapi-generator-cli generate -i openapi.yaml -g python-flask -o ./flask-server
 ```
 
-**Bước 4 — Điền logic vào services (sau khi gen):**
+**Bước 3 — Điền logic vào services (sau khi gen):**
 
 Mở các file trong `server/services/`
 
@@ -82,11 +77,11 @@ server/
 └── index.js
 ```
 
-**Bước 5 — Chạy server:**
+**Bước 4 — Chạy server:**
 ```bash
-cd server
-npm install
-npm start
+cd flask-server
+pip install -r requirements.txt
+python3 openapi_server
 ```
 
 Server sẽ chạy tại `http://localhost:8080`.
@@ -101,8 +96,7 @@ pip install schemathesis
 
 **Bước 2 — Chạy test tự động đối với Mock Server:**
 ```bash
-schemathesis run openapi.yaml \
-  --url=http://127.0.0.1:4010 
+schemathesis run openapi.yaml --url=http://127.0.0.1:4010 
 ```
 
 > **Lưu ý:** Cần khởi động Mock Server (bước 3) trước khi chạy test.

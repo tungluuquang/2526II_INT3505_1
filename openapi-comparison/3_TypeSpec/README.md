@@ -36,11 +36,6 @@ Sau khi compile, bạn có thể:
 
 * Truy cập: https://editor.swagger.io/
 * Import file `openapi.yaml`
-
-### Cách 2: VS Code
-
-* Dùng extension OpenAPI/Swagger Viewer
-
 ---
 
 ## 4. Generate Code

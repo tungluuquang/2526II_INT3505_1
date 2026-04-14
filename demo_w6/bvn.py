@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///demo_pagination.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+# app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 # MODEL
@@ -94,6 +94,44 @@ def get_by_cursor():
         "time_seconds": duration,
         "next_cursor": next_cursor,
         "data": [{"id": u.id, "name": u.username} for u in users]
+    })
+
+@app.route('/api/compare')
+def compare_pagination():
+    # Tham số chung
+    limit = request.args.get('limit', 10, type=int)
+    
+    # 1. Page-based
+    page = request.args.get('page', 100000, type=int) 
+    start = time.time()
+    User.query.order_by(User.id).paginate(page=page, per_page=limit, count=False).items
+    time_page = time.time() - start
+
+    # 2. Offset-based
+    offset = request.args.get('offset', 999990, type=int)
+    start = time.time()
+    User.query.order_by(User.id).offset(offset).limit(limit).all()
+    time_offset = time.time() - start
+
+    # 3. Cursor-based
+    last_id = request.args.get('last_id', 999990, type=int)
+    start = time.time()
+    User.query.filter(User.id > last_id).order_by(User.id).limit(limit).all()
+    time_cursor = time.time() - start
+
+    return jsonify({
+        "scenario": "Deep Pagination (Fetching items near the 1,000,000th row)",
+        "parameters": {
+            "limit": limit,
+            "page_tested": page,
+            "offset_tested": offset,
+            "last_id_tested": last_id
+        },
+        "results_seconds": {
+            "1_page_based": time_page,
+            "2_offset_based": time_offset,
+            "3_cursor_based": time_cursor
+        },
     })
 
 if __name__ == '__main__':
