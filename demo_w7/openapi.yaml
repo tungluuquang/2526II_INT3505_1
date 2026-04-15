@@ -1,0 +1,353 @@
+openapi: 3.0.3
+info:
+  title: Product API (Simplified)
+  description: API Quản lý Sản phẩm cơ bản (Không yêu cầu xác thực)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local Server
+
+tags:
+  - name: Products
+    description: Quản lý sản phẩm
+  - name: Categories
+    description: Quản lý danh mục sản phẩm
+
+paths:
+  /products:
+    get:
+      tags: [Products]
+      summary: Lấy danh sách sản phẩm
+      operationId: listProducts
+      parameters:
+        - name: category_id
+          in: query
+          description: Lọc theo danh mục
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Danh sách sản phẩm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+
+    post:
+      tags: [Products]
+      summary: Tạo sản phẩm mới
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: Sản phẩm được tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /products/{product_id}:
+    parameters:
+      - $ref: '#/components/parameters/ProductIdParam'
+
+    get:
+      tags: [Products]
+      summary: Lấy chi tiết sản phẩm
+      operationId: getProduct
+      responses:
+        '200':
+          description: Chi tiết sản phẩm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Products]
+      summary: Cập nhật toàn bộ thông tin sản phẩm
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [Products]
+      summary: Cập nhật một phần thông tin sản phẩm
+      operationId: patchProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPatch'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Products]
+      summary: Xóa sản phẩm
+      operationId: deleteProduct
+      responses:
+        '204':
+          description: Xóa thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{product_id}/stock:
+    parameters:
+      - $ref: '#/components/parameters/ProductIdParam'
+
+    patch:
+      tags: [Products]
+      summary: Cập nhật tồn kho sản phẩm
+      operationId: updateStock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockUpdate'
+      responses:
+        '200':
+          description: Cập nhật tồn kho thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Lấy danh sách danh mục
+      operationId: listCategories
+      responses:
+        '200':
+          description: Danh sách danh mục
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+    post:
+      tags: [Categories]
+      summary: Tạo danh mục mới
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreate'
+      responses:
+        '201':
+          description: Danh mục được tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+components:
+  parameters:
+    ProductIdParam:
+      name: product_id
+      in: path
+      required: true
+      description: ID của sản phẩm
+      schema:
+        type: integer
+        example: 1
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: "Áo Thun Nam Basic"
+        description:
+          type: string
+          example: "Áo thun cotton 100%, thoáng mát"
+        price:
+          type: number
+          example: 199000
+        sku:
+          type: string
+          example: "ATN-BASIC-001"
+        category_id:
+          type: integer
+          example: 1
+        stock_quantity:
+          type: integer
+          example: 150
+        status:
+          type: string
+          example: "active"
+        created_at:
+          type: string
+          format: date-time
+
+    ProductCreate:
+      type: object
+      required: [name, price, sku, category_id]
+      properties:
+        name:
+          type: string
+          example: "Áo Thun Nam Basic"
+        description:
+          type: string
+        price:
+          type: number
+          example: 199000
+        sku:
+          type: string
+          example: "ATN-BASIC-001"
+        category_id:
+          type: integer
+          example: 1
+        stock_quantity:
+          type: integer
+          default: 0
+        status:
+          type: string
+          default: "draft"
+
+    ProductPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock_quantity:
+          type: integer
+
+    ProductResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Product'
+
+    ProductListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+
+    StockUpdate:
+      type: object
+      required: [action, quantity]
+      properties:
+        action:
+          type: string
+          enum: [set, increment, decrement]
+        quantity:
+          type: integer
+          example: 20
+
+    StockResponse:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        previous_quantity:
+          type: integer
+        current_quantity:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Thời trang nam"
+        slug:
+          type: string
+          example: "thoi-trang-nam"
+        parent_id:
+          type: integer
+          nullable: true
+
+    CategoryCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: "Thời trang nam"
+        parent_id:
+          type: integer
+          nullable: true
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "ERROR_CODE"
+        message:
+          type: string
+          example: "Thông báo lỗi"
+
+  responses:
+    BadRequest:
+      description: Yêu cầu không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
