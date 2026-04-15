@@ -1,0 +1,563 @@
+openapi: 3.0.3
+info:
+  description: API Quản lý Sản phẩm cơ bản (Không yêu cầu xác thực)
+  title: Product API (Simplified)
+  version: 1.0.0
+servers:
+- description: Local Server
+  url: http://localhost:5000/api/v1
+tags:
+- description: Quản lý sản phẩm
+  name: Products
+- description: Quản lý danh mục sản phẩm
+  name: Categories
+paths:
+  /categories:
+    get:
+      operationId: list_categories
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listCategories_200_response"
+          description: Danh sách danh mục
+      summary: Lấy danh sách danh mục
+      tags:
+      - Categories
+      x-openapi-router-controller: openapi_server.controllers.categories_controller
+    post:
+      operationId: create_category
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryCreate"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+          description: Danh mục được tạo thành công
+      summary: Tạo danh mục mới
+      tags:
+      - Categories
+      x-openapi-router-controller: openapi_server.controllers.categories_controller
+  /products:
+    get:
+      operationId: list_products
+      parameters:
+      - description: Lọc theo danh mục
+        explode: true
+        in: query
+        name: category_id
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+          description: Danh sách sản phẩm
+      summary: Lấy danh sách sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+    post:
+      operationId: create_product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+          description: Sản phẩm được tạo thành công
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Yêu cầu không hợp lệ
+      summary: Tạo sản phẩm mới
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+  /products/{product_id}:
+    delete:
+      operationId: delete_product
+      parameters:
+      - description: ID của sản phẩm
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Xóa thành công
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Không tìm thấy tài nguyên
+      summary: Xóa sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+    get:
+      operationId: get_product
+      parameters:
+      - description: ID của sản phẩm
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+          description: Chi tiết sản phẩm
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Không tìm thấy tài nguyên
+      summary: Lấy chi tiết sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+    patch:
+      operationId: patch_product
+      parameters:
+      - description: ID của sản phẩm
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPatch"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+          description: Cập nhật thành công
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Không tìm thấy tài nguyên
+      summary: Cập nhật một phần thông tin sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+    put:
+      operationId: update_product
+      parameters:
+      - description: ID của sản phẩm
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+          description: Cập nhật thành công
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Không tìm thấy tài nguyên
+      summary: Cập nhật toàn bộ thông tin sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+  /products/{product_id}/stock:
+    patch:
+      operationId: update_stock
+      parameters:
+      - description: ID của sản phẩm
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: 1
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StockUpdate"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockResponse"
+          description: Cập nhật tồn kho thành công
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Không tìm thấy tài nguyên
+      summary: Cập nhật tồn kho sản phẩm
+      tags:
+      - Products
+      x-openapi-router-controller: openapi_server.controllers.products_controller
+components:
+  parameters:
+    ProductIdParam:
+      description: ID của sản phẩm
+      explode: false
+      in: path
+      name: product_id
+      required: true
+      schema:
+        example: 1
+        type: integer
+      style: simple
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Yêu cầu không hợp lệ
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Không tìm thấy tài nguyên
+  schemas:
+    Product:
+      example:
+        category_id: 1
+        price: 199000
+        name: Áo Thun Nam Basic
+        description: "Áo thun cotton 100%, thoáng mát"
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 1
+        sku: ATN-BASIC-001
+        stock_quantity: 150
+        status: active
+      properties:
+        id:
+          example: 1
+          readOnly: true
+          title: id
+          type: integer
+        name:
+          example: Áo Thun Nam Basic
+          title: name
+          type: string
+        description:
+          example: "Áo thun cotton 100%, thoáng mát"
+          title: description
+          type: string
+        price:
+          example: 199000
+          title: price
+          type: number
+        sku:
+          example: ATN-BASIC-001
+          title: sku
+          type: string
+        category_id:
+          example: 1
+          title: category_id
+          type: integer
+        stock_quantity:
+          example: 150
+          title: stock_quantity
+          type: integer
+        status:
+          example: active
+          title: status
+          type: string
+        created_at:
+          format: date-time
+          title: created_at
+          type: string
+      title: Product
+      type: object
+    ProductCreate:
+      example:
+        category_id: 1
+        price: 199000
+        name: Áo Thun Nam Basic
+        description: description
+        sku: ATN-BASIC-001
+        stock_quantity: 0
+        status: draft
+      properties:
+        name:
+          example: Áo Thun Nam Basic
+          title: name
+          type: string
+        description:
+          title: description
+          type: string
+        price:
+          example: 199000
+          title: price
+          type: number
+        sku:
+          example: ATN-BASIC-001
+          title: sku
+          type: string
+        category_id:
+          example: 1
+          title: category_id
+          type: integer
+        stock_quantity:
+          default: 0
+          title: stock_quantity
+          type: integer
+        status:
+          default: draft
+          title: status
+          type: string
+      required:
+      - category_id
+      - name
+      - price
+      - sku
+      title: ProductCreate
+      type: object
+    ProductPatch:
+      example:
+        price: 0.8008281904610115
+        name: name
+        description: description
+        stock_quantity: 6
+      properties:
+        name:
+          title: name
+          type: string
+        description:
+          title: description
+          type: string
+        price:
+          title: price
+          type: number
+        stock_quantity:
+          title: stock_quantity
+          type: integer
+      title: ProductPatch
+      type: object
+    ProductResponse:
+      example:
+        data:
+          category_id: 1
+          price: 199000
+          name: Áo Thun Nam Basic
+          description: "Áo thun cotton 100%, thoáng mát"
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 1
+          sku: ATN-BASIC-001
+          stock_quantity: 150
+          status: active
+      properties:
+        data:
+          $ref: "#/components/schemas/Product"
+      title: ProductResponse
+      type: object
+    ProductListResponse:
+      example:
+        data:
+        - category_id: 1
+          price: 199000
+          name: Áo Thun Nam Basic
+          description: "Áo thun cotton 100%, thoáng mát"
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 1
+          sku: ATN-BASIC-001
+          stock_quantity: 150
+          status: active
+        - category_id: 1
+          price: 199000
+          name: Áo Thun Nam Basic
+          description: "Áo thun cotton 100%, thoáng mát"
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: 1
+          sku: ATN-BASIC-001
+          stock_quantity: 150
+          status: active
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/Product"
+          title: data
+          type: array
+      title: ProductListResponse
+      type: object
+    StockUpdate:
+      example:
+        quantity: 20
+        action: set
+      properties:
+        action:
+          enum:
+          - set
+          - increment
+          - decrement
+          title: action
+          type: string
+        quantity:
+          example: 20
+          title: quantity
+          type: integer
+      required:
+      - action
+      - quantity
+      title: StockUpdate
+      type: object
+    StockResponse:
+      example:
+        previous_quantity: 6
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        product_id: 0
+        current_quantity: 1
+      properties:
+        product_id:
+          title: product_id
+          type: integer
+        previous_quantity:
+          title: previous_quantity
+          type: integer
+        current_quantity:
+          title: current_quantity
+          type: integer
+        updated_at:
+          format: date-time
+          title: updated_at
+          type: string
+      title: StockResponse
+      type: object
+    Category:
+      example:
+        parent_id: 0
+        name: Thời trang nam
+        id: 1
+        slug: thoi-trang-nam
+      properties:
+        id:
+          example: 1
+          title: id
+          type: integer
+        name:
+          example: Thời trang nam
+          title: name
+          type: string
+        slug:
+          example: thoi-trang-nam
+          title: slug
+          type: string
+        parent_id:
+          nullable: true
+          title: parent_id
+          type: integer
+      title: Category
+      type: object
+    CategoryCreate:
+      example:
+        parent_id: 0
+        name: Thời trang nam
+      properties:
+        name:
+          example: Thời trang nam
+          title: name
+          type: string
+        parent_id:
+          nullable: true
+          title: parent_id
+          type: integer
+      required:
+      - name
+      title: CategoryCreate
+      type: object
+    Error:
+      example:
+        code: ERROR_CODE
+        message: Thông báo lỗi
+      properties:
+        code:
+          example: ERROR_CODE
+          title: code
+          type: string
+        message:
+          example: Thông báo lỗi
+          title: message
+          type: string
+      title: Error
+      type: object
+    listCategories_200_response:
+      example:
+        data:
+        - parent_id: 0
+          name: Thời trang nam
+          id: 1
+          slug: thoi-trang-nam
+        - parent_id: 0
+          name: Thời trang nam
+          id: 1
+          slug: thoi-trang-nam
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/Category"
+          title: data
+          type: array
+      title: listCategories_200_response
+      type: object
