@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  description: API Quản lý Sản phẩm cơ bản (Không yêu cầu xác thực)
-  title: Product API (Simplified)
+  description: API Quản lý Sản phẩm cơ bản
+  title: Product API
   version: 1.0.0
 servers:
 - description: Local Server
@@ -9,54 +9,10 @@ servers:
 tags:
 - description: Quản lý sản phẩm
   name: Products
-- description: Quản lý danh mục sản phẩm
-  name: Categories
 paths:
-  /categories:
-    get:
-      operationId: list_categories
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/listCategories_200_response"
-          description: Danh sách danh mục
-      summary: Lấy danh sách danh mục
-      tags:
-      - Categories
-      x-openapi-router-controller: openapi_server.controllers.categories_controller
-    post:
-      operationId: create_category
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CategoryCreate"
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Category"
-          description: Danh mục được tạo thành công
-      summary: Tạo danh mục mới
-      tags:
-      - Categories
-      x-openapi-router-controller: openapi_server.controllers.categories_controller
   /products:
     get:
       operationId: list_products
-      parameters:
-      - description: Lọc theo danh mục
-        explode: true
-        in: query
-        name: category_id
-        required: false
-        schema:
-          type: integer
-        style: form
       responses:
         "200":
           content:
@@ -282,7 +238,6 @@ components:
   schemas:
     Product:
       example:
-        category_id: 1
         price: 199000
         name: Áo Thun Nam Basic
         description: "Áo thun cotton 100%, thoáng mát"
@@ -313,10 +268,6 @@ components:
           example: ATN-BASIC-001
           title: sku
           type: string
-        category_id:
-          example: 1
-          title: category_id
-          type: integer
         stock_quantity:
           example: 150
           title: stock_quantity
@@ -333,7 +284,6 @@ components:
       type: object
     ProductCreate:
       example:
-        category_id: 1
         price: 199000
         name: Áo Thun Nam Basic
         description: description
@@ -356,10 +306,6 @@ components:
           example: ATN-BASIC-001
           title: sku
           type: string
-        category_id:
-          example: 1
-          title: category_id
-          type: integer
         stock_quantity:
           default: 0
           title: stock_quantity
@@ -369,7 +315,6 @@ components:
           title: status
           type: string
       required:
-      - category_id
       - name
       - price
       - sku
@@ -399,7 +344,6 @@ components:
     ProductResponse:
       example:
         data:
-          category_id: 1
           price: 199000
           name: Áo Thun Nam Basic
           description: "Áo thun cotton 100%, thoáng mát"
@@ -416,8 +360,7 @@ components:
     ProductListResponse:
       example:
         data:
-        - category_id: 1
-          price: 199000
+        - price: 199000
           name: Áo Thun Nam Basic
           description: "Áo thun cotton 100%, thoáng mát"
           created_at: 2000-01-23T04:56:07.000+00:00
@@ -425,8 +368,7 @@ components:
           sku: ATN-BASIC-001
           stock_quantity: 150
           status: active
-        - category_id: 1
-          price: 199000
+        - price: 199000
           name: Áo Thun Nam Basic
           description: "Áo thun cotton 100%, thoáng mát"
           created_at: 2000-01-23T04:56:07.000+00:00
@@ -485,48 +427,6 @@ components:
           type: string
       title: StockResponse
       type: object
-    Category:
-      example:
-        parent_id: 0
-        name: Thời trang nam
-        id: 1
-        slug: thoi-trang-nam
-      properties:
-        id:
-          example: 1
-          title: id
-          type: integer
-        name:
-          example: Thời trang nam
-          title: name
-          type: string
-        slug:
-          example: thoi-trang-nam
-          title: slug
-          type: string
-        parent_id:
-          nullable: true
-          title: parent_id
-          type: integer
-      title: Category
-      type: object
-    CategoryCreate:
-      example:
-        parent_id: 0
-        name: Thời trang nam
-      properties:
-        name:
-          example: Thời trang nam
-          title: name
-          type: string
-        parent_id:
-          nullable: true
-          title: parent_id
-          type: integer
-      required:
-      - name
-      title: CategoryCreate
-      type: object
     Error:
       example:
         code: ERROR_CODE
@@ -541,23 +441,4 @@ components:
           title: message
           type: string
       title: Error
-      type: object
-    listCategories_200_response:
-      example:
-        data:
-        - parent_id: 0
-          name: Thời trang nam
-          id: 1
-          slug: thoi-trang-nam
-        - parent_id: 0
-          name: Thời trang nam
-          id: 1
-          slug: thoi-trang-nam
-      properties:
-        data:
-          items:
-            $ref: "#/components/schemas/Category"
-          title: data
-          type: array
-      title: listCategories_200_response
       type: object

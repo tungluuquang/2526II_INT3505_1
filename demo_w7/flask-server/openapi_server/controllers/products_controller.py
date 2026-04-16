@@ -36,12 +36,9 @@ def safe_object_id(pid):
 
 def create_product(body):  # noqa: E501
     """Tạo sản phẩm mới
-
      # noqa: E501
-
     :param product_create: 
     :type product_create: dict | bytes
-
     :rtype: Union[ProductResponse, Tuple[ProductResponse, int], Tuple[ProductResponse, int, Dict[str, str]]
     """
     product_create = body
@@ -49,7 +46,6 @@ def create_product(body):  # noqa: E501
         product_create = ProductCreate.from_dict(connexion.request.get_json())  # noqa: E501
 
     db = get_db()
-    
     # Map dữ liệu thành Dictionary để chèn vào MongoDB
     product_data = {
         "name": product_create.name,
@@ -60,115 +56,87 @@ def create_product(body):  # noqa: E501
         "stock_quantity": product_create.stock_quantity if product_create.stock_quantity is not None else 0,
         "status": product_create.status if product_create.status is not None else 'draft'
     }
-    
     # Insert vào collection 'products'
     result = db.products.insert_one(product_data)
-    
     # Gán _id vừa tạo vào object
     product_data['_id'] = result.inserted_id
-    
     return {"data": format_mongo_doc(product_data)}, 201
 #    return 'do some magic!'
 
 
 def delete_product(product_id):  # noqa: E501
     """Xóa sản phẩm
-
      # noqa: E501
-
     :param product_id: ID của sản phẩm
     :type product_id: int
-
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
 
     db = get_db()
-    
     # Xóa trực tiếp và kiểm tra số lượng bản ghi bị ảnh hưởng
     result = db.products.delete_one({"_id": safe_object_id(product_id)})
-    
     if result.deleted_count == 0:
         return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
-        
     return '', 204
 #    return 'do some magic!'
 
 
 def get_product(product_id):  # noqa: E501
     """Lấy chi tiết sản phẩm
-
      # noqa: E501
-
     :param product_id: ID của sản phẩm
     :type product_id: int
-
     :rtype: Union[ProductResponse, Tuple[ProductResponse, int], Tuple[ProductResponse, int, Dict[str, str]]
     """
 
     db = get_db()
-    
     product = db.products.find_one({"_id": safe_object_id(product_id)})
-    
     if product is None:
         return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
-        
     return {"data": format_mongo_doc(product)}, 200
 #    return 'do some magic!'
 
 
 def list_products(category_id=None):  # noqa: E501
     """Lấy danh sách sản phẩm
-
      # noqa: E501
-
     :param category_id: Lọc theo danh mục
     :type category_id: int
-
     :rtype: Union[ProductListResponse, Tuple[ProductListResponse, int], Tuple[ProductListResponse, int, Dict[str, str]]
     """
     db = get_db()
     query = {}
-    
     # Build query động nếu có filter
     if category_id is not None:
         query["category_id"] = category_id
-        
     cursor = db.products.find(query)
-    
     products = [format_mongo_doc(doc) for doc in cursor]
-    
     return {"data": products}, 200
 #    return 'do some magic!'
 
 
 def patch_product(product_id, body):  # noqa: E501
     """Cập nhật một phần thông tin sản phẩm
-
      # noqa: E501
-
     :param product_id: ID của sản phẩm
     :type product_id: int
     :param product_patch: 
     :type product_patch: dict | bytes
-
     :rtype: Union[ProductResponse, Tuple[ProductResponse, int], Tuple[ProductResponse, int, Dict[str, str]]
     """
     product_patch = body
     if connexion.request.is_json:
         product_patch = ProductPatch.from_dict(connexion.request.get_json())  # noqa: E501
-        
     db = get_db()
 
     # Lấy ra Dictionary loại bỏ những trường None
     patch_data = {k: v for k, v in product_patch.to_dict().items() if v is not None}
-    
     if not patch_data:
         # Nếu không có gì để update, trả về object hiện tại
         product = db.products.find_one({"_id": safe_object_id(product_id)})
         if not product:
             return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
         return {"data": format_mongo_doc(product)}, 200
-
     # find_one_and_update với ReturnDocument.AFTER sẽ trả về record sau khi đã update xong (nguyên tử hóa)
     updated_product = db.products.find_one_and_update(
         {"_id": safe_object_id(product_id)},
@@ -178,29 +146,23 @@ def patch_product(product_id, body):  # noqa: E501
 
     if not updated_product:
         return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
-    
     return {"data": format_mongo_doc(updated_product)}, 200
 #    return 'do some magic!'
 
 
 def update_product(product_id, body):  # noqa: E501
     """Cập nhật toàn bộ thông tin sản phẩm
-
      # noqa: E501
-
     :param product_id: ID của sản phẩm
     :type product_id: int
     :param product_create: 
     :type product_create: dict | bytes
-
     :rtype: Union[ProductResponse, Tuple[ProductResponse, int], Tuple[ProductResponse, int, Dict[str, str]]
     """
     product_create = body
     if connexion.request.is_json:
         product_create = ProductCreate.from_dict(connexion.request.get_json())  # noqa: E501
-
     db = get_db()
-    
     # Object update toàn bộ
     update_data = {
         "name": product_create.name,
@@ -217,45 +179,22 @@ def update_product(product_id, body):  # noqa: E501
         {"$set": update_data},
         return_document=ReturnDocument.AFTER
     )
-    
     if not updated_product:
         return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
-    
     return {"data": format_mongo_doc(updated_product)}, 200 
 #    return 'do some magic!'
 
 
 def update_stock(product_id, body):  # noqa: E501
     """Cập nhật tồn kho sản phẩm
-
      # noqa: E501
-
     :param product_id: ID của sản phẩm
     :type product_id: int
     :param stock_update: 
     :type stock_update: dict | bytes
-
     :rtype: Union[StockResponse, Tuple[StockResponse, int], Tuple[StockResponse, int, Dict[str, str]]
     """
     stock_update = body
     if connexion.request.is_json:
         stock_update = StockUpdate.from_dict(connexion.request.get_json())  # noqa: E501
-
-    db = get_db()
-    
-    # Tôi viết sẵn logic cho bạn luôn: cập nhật số lượng tồn kho
-    # Giả sử trong Swagger Model StockUpdate có thuộc tính `quantity`
-    quantity_to_add = getattr(stock_update, 'quantity', 0)
-    
-    updated_product = db.products.find_one_and_update(
-        {"_id": safe_object_id(product_id)},
-        {"$inc": {"stock_quantity": quantity_to_add}}, # Dùng $inc để cộng/trừ thay vì set cứng
-        return_document=ReturnDocument.AFTER
-    )
-
-    if not updated_product:
-        return {"code": "NOT_FOUND", "message": "Không tìm thấy sản phẩm"}, 404
-        
-    # Trả về Response theo model StockResponse (giả sử có trường stock_quantity)
-    return {"data": {"stock_quantity": updated_product.get("stock_quantity")}}, 200
-#    return 'do some magic!'
+    return 'do some magic!'

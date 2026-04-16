@@ -20,7 +20,7 @@ class TestProductsController(BaseTestCase):
 
         Tạo sản phẩm mới
         """
-        product_create = {"category_id":1,"price":199000,"name":"Áo Thun Nam Basic","description":"description","sku":"ATN-BASIC-001","stock_quantity":0,"status":"draft"}
+        product_create = {"price":199000,"name":"Áo Thun Nam Basic","description":"description","sku":"ATN-BASIC-001","stock_quantity":0,"status":"draft"}
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -69,15 +69,13 @@ class TestProductsController(BaseTestCase):
 
         Lấy danh sách sản phẩm
         """
-        query_string = [('category_id', 56)]
         headers = { 
             'Accept': 'application/json',
         }
         response = self.client.open(
             '/api/v1/products',
             method='GET',
-            headers=headers,
-            query_string=query_string)
+            headers=headers)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -105,7 +103,7 @@ class TestProductsController(BaseTestCase):
 
         Cập nhật toàn bộ thông tin sản phẩm
         """
-        product_create = {"category_id":1,"price":199000,"name":"Áo Thun Nam Basic","description":"description","sku":"ATN-BASIC-001","stock_quantity":0,"status":"draft"}
+        product_create = {"price":199000,"name":"Áo Thun Nam Basic","description":"description","sku":"ATN-BASIC-001","stock_quantity":0,"status":"draft"}
         headers = { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',

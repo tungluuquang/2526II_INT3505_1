@@ -12,7 +12,7 @@ class ProductCreate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name=None, description=None, price=None, sku=None, category_id=None, stock_quantity=0, status='draft'):  # noqa: E501
+    def __init__(self, name=None, description=None, price=None, sku=None, stock_quantity=0, status='draft'):  # noqa: E501
         """ProductCreate - a model defined in OpenAPI
 
         :param name: The name of this ProductCreate.  # noqa: E501
@@ -23,8 +23,6 @@ class ProductCreate(Model):
         :type price: float
         :param sku: The sku of this ProductCreate.  # noqa: E501
         :type sku: str
-        :param category_id: The category_id of this ProductCreate.  # noqa: E501
-        :type category_id: int
         :param stock_quantity: The stock_quantity of this ProductCreate.  # noqa: E501
         :type stock_quantity: int
         :param status: The status of this ProductCreate.  # noqa: E501
@@ -35,7 +33,6 @@ class ProductCreate(Model):
             'description': str,
             'price': float,
             'sku': str,
-            'category_id': int,
             'stock_quantity': int,
             'status': str
         }
@@ -45,7 +42,6 @@ class ProductCreate(Model):
             'description': 'description',
             'price': 'price',
             'sku': 'sku',
-            'category_id': 'category_id',
             'stock_quantity': 'stock_quantity',
             'status': 'status'
         }
@@ -54,7 +50,6 @@ class ProductCreate(Model):
         self._description = description
         self._price = price
         self._sku = sku
-        self._category_id = category_id
         self._stock_quantity = stock_quantity
         self._status = status
 
@@ -158,29 +153,6 @@ class ProductCreate(Model):
             raise ValueError("Invalid value for `sku`, must not be `None`")  # noqa: E501
 
         self._sku = sku
-
-    @property
-    def category_id(self) -> int:
-        """Gets the category_id of this ProductCreate.
-
-
-        :return: The category_id of this ProductCreate.
-        :rtype: int
-        """
-        return self._category_id
-
-    @category_id.setter
-    def category_id(self, category_id: int):
-        """Sets the category_id of this ProductCreate.
-
-
-        :param category_id: The category_id of this ProductCreate.
-        :type category_id: int
-        """
-        if category_id is None:
-            raise ValueError("Invalid value for `category_id`, must not be `None`")  # noqa: E501
-
-        self._category_id = category_id
 
     @property
     def stock_quantity(self) -> int:

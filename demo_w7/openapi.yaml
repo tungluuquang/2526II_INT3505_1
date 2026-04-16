@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Product API (Simplified)
-  description: API Quản lý Sản phẩm cơ bản (Không yêu cầu xác thực)
+  title: Product API
+  description: API Quản lý Sản phẩm cơ bản
   version: 1.0.0
 
 servers:
@@ -11,8 +11,6 @@ servers:
 tags:
   - name: Products
     description: Quản lý sản phẩm
-  - name: Categories
-    description: Quản lý danh mục sản phẩm
 
 paths:
   /products:
@@ -20,12 +18,6 @@ paths:
       tags: [Products]
       summary: Lấy danh sách sản phẩm
       operationId: listProducts
-      parameters:
-        - name: category_id
-          in: query
-          description: Lọc theo danh mục
-          schema:
-            type: integer
       responses:
         '200':
           description: Danh sách sản phẩm
@@ -146,42 +138,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /categories:
-    get:
-      tags: [Categories]
-      summary: Lấy danh sách danh mục
-      operationId: listCategories
-      responses:
-        '200':
-          description: Danh sách danh mục
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Category'
-
-    post:
-      tags: [Categories]
-      summary: Tạo danh mục mới
-      operationId: createCategory
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CategoryCreate'
-      responses:
-        '201':
-          description: Danh mục được tạo thành công
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Category'
-
 components:
   parameters:
     ProductIdParam:
@@ -213,9 +169,6 @@ components:
         sku:
           type: string
           example: "ATN-BASIC-001"
-        category_id:
-          type: integer
-          example: 1
         stock_quantity:
           type: integer
           example: 150
@@ -228,7 +181,7 @@ components:
 
     ProductCreate:
       type: object
-      required: [name, price, sku, category_id]
+      required: [name, price, sku]
       properties:
         name:
           type: string
@@ -241,9 +194,6 @@ components:
         sku:
           type: string
           example: "ATN-BASIC-001"
-        category_id:
-          type: integer
-          example: 1
         stock_quantity:
           type: integer
           default: 0
@@ -300,33 +250,6 @@ components:
         updated_at:
           type: string
           format: date-time
-
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-        name:
-          type: string
-          example: "Thời trang nam"
-        slug:
-          type: string
-          example: "thoi-trang-nam"
-        parent_id:
-          type: integer
-          nullable: true
-
-    CategoryCreate:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-          example: "Thời trang nam"
-        parent_id:
-          type: integer
-          nullable: true
 
     Error:
       type: object

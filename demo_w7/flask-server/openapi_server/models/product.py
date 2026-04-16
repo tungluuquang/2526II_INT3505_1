@@ -12,7 +12,7 @@ class Product(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, name=None, description=None, price=None, sku=None, category_id=None, stock_quantity=None, status=None, created_at=None):  # noqa: E501
+    def __init__(self, id=None, name=None, description=None, price=None, sku=None, stock_quantity=None, status=None, created_at=None):  # noqa: E501
         """Product - a model defined in OpenAPI
 
         :param id: The id of this Product.  # noqa: E501
@@ -25,8 +25,6 @@ class Product(Model):
         :type price: float
         :param sku: The sku of this Product.  # noqa: E501
         :type sku: str
-        :param category_id: The category_id of this Product.  # noqa: E501
-        :type category_id: int
         :param stock_quantity: The stock_quantity of this Product.  # noqa: E501
         :type stock_quantity: int
         :param status: The status of this Product.  # noqa: E501
@@ -40,7 +38,6 @@ class Product(Model):
             'description': str,
             'price': float,
             'sku': str,
-            'category_id': int,
             'stock_quantity': int,
             'status': str,
             'created_at': datetime
@@ -52,7 +49,6 @@ class Product(Model):
             'description': 'description',
             'price': 'price',
             'sku': 'sku',
-            'category_id': 'category_id',
             'stock_quantity': 'stock_quantity',
             'status': 'status',
             'created_at': 'created_at'
@@ -63,7 +59,6 @@ class Product(Model):
         self._description = description
         self._price = price
         self._sku = sku
-        self._category_id = category_id
         self._stock_quantity = stock_quantity
         self._status = status
         self._created_at = created_at
@@ -183,27 +178,6 @@ class Product(Model):
         """
 
         self._sku = sku
-
-    @property
-    def category_id(self) -> int:
-        """Gets the category_id of this Product.
-
-
-        :return: The category_id of this Product.
-        :rtype: int
-        """
-        return self._category_id
-
-    @category_id.setter
-    def category_id(self, category_id: int):
-        """Sets the category_id of this Product.
-
-
-        :param category_id: The category_id of this Product.
-        :type category_id: int
-        """
-
-        self._category_id = category_id
 
     @property
     def stock_quantity(self) -> int:
