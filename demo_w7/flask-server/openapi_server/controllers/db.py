@@ -20,8 +20,6 @@ def get_db():
 
 def init_db():
     db = get_db()
-    db.categories.create_index("slug", unique=True)
-
     db.products.create_index("sku", unique=True)
 
     print("Đã kết nối MongoDB và khởi tạo thành công các Unique Index!")
