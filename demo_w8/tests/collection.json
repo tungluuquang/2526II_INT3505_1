@@ -270,10 +270,6 @@
 							"    ",
 							"    pm.expect(json.data.id).to.eql(expectedId);",
 							"});",
-							"",
-							"pm.test('User có đủ 5 fields: id, name, email, age, role', function () {",
-							"    pm.expect(pm.response.json().data).to.have.all.keys('id', 'name', 'email', 'age', 'role');",
-							"});",
 							""
 						],
 						"type": "text/javascript",

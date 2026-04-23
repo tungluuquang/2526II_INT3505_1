@@ -4,9 +4,9 @@ app = Flask(__name__)
 
 # In-memory database
 users = [
-    {"id": 1, "name": "Nguyen Van A", "email": "nguyenvana@example.com", "age": 25, "role": "admin"},
-    {"id": 2, "name": "Tran Thi B", "email": "tranthib@example.com", "age": 30, "role": "user"},
-    {"id": 3, "name": "Le Van C", "email": "levanc@example.com", "age": 22, "role": "user"},
+    {"id": 1, "name": "Nguyen Van A", "email": "nguyenvana@example.com"},
+    {"id": 2, "name": "Tran Thi B", "email": "tranthib@example.com"},
+    {"id": 3, "name": "Le Van C", "email": "levanc@example.com"},
 ]
 next_id = 4
 
@@ -46,8 +46,6 @@ def create_user():
 
     name = data.get("name")
     email = data.get("email")
-    age = data.get("age")
-    role = data.get("role", "user")
 
     if not name or not email:
         return jsonify({
@@ -64,9 +62,7 @@ def create_user():
     new_user = {
         "id": next_id,
         "name": name,
-        "email": email,
-        "age": age if age is not None else None,
-        "role": role
+        "email": email
     }
 
     users.append(new_user)
@@ -103,8 +99,6 @@ def update_user(user_id):
 
     user["name"] = data.get("name", user["name"])
     user["email"] = data.get("email", user["email"])
-    user["age"] = data.get("age") if "age" in data else user["age"]
-    user["role"] = data.get("role", user["role"])
 
     return jsonify({
         "success": True,
