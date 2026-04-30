@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: Payment API
+  description: Tài liệu đặc tả API minh họa chiến lược nâng cấp từ v1 sang v2.
+  version: 2.0.0
+
+servers:
+  - url: http://localhost:3000/
+    description: Production Server
+
+paths:
+  /v1/payments:
+    post:
+      summary: Tạo giao dịch thanh toán (Deprecated)
+      description: |
+        **WARNING: DEPRECATED**
+        API v1 này hiện đã lỗi thời và dự kiến sẽ bị tắt hoàn toàn vào ngày 31/12/2026. 
+        Vui lòng chuyển sang sử dụng `/v2/payments`.
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transactionId:
+                  type: string
+                  example: "TXN-12345"
+                amount:
+                  type: string
+                  description: "Số tiền bao gồm cả đơn vị (Thiết kế cũ)"
+                  example: "100000VND"
+                userId:
+                  type: string
+                  example: "USR-001"
+      responses:
+        '200':
+          description: Thanh toán thành công
+          
+  /v2/payments:
+    post:
+      summary: Tạo giao dịch thanh toán (Phiên bản mới)
+      description: API v2 chuẩn hóa cấu trúc dữ liệu, tách biệt amount và currency theo chuẩn ISO.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transactionId
+                - amount
+                - currency
+                - userId
+              properties:
+                transactionId:
+                  type: string
+                  example: "TXN-12345"
+                amount:
+                  type: integer
+                  description: "Số tiền giao dịch"
+                  example: 100000
+                currency:
+                  type: string
+                  description: "Mã tiền tệ (ISO 4217)"
+                  example: "VND"
+                userId:
+                  type: string
+                  example: "USR-001"
+      responses:
+        '200':
+          description: Thanh toán thành công
