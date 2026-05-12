@@ -12,14 +12,13 @@ import pybreaker
 # Khởi tạo Flask app ĐẦU TIÊN
 app = Flask(__name__)
 
-# ==========================================
 # 1. THIẾT LẬP LOGGING
-# ==========================================
+
 logHandler = logging.StreamHandler()
 formatter = jsonlogger.JsonFormatter('%(asctime)s %(levelname)s %(name)s %(message)s')
 logHandler.setFormatter(formatter)
 
-# Tạo logger riêng cho API của bạn
+# Tạo logger riêng cho API
 logger = logging.getLogger('my_api') 
 logger.setLevel(logging.INFO)
 logger.addHandler(logHandler)
@@ -28,16 +27,11 @@ logger.addHandler(logHandler)
 werkzeug_logger = logging.getLogger('werkzeug')
 werkzeug_logger.setLevel(logging.ERROR)
 
-# ==========================================
 # 2. THIẾT LẬP METRICS (Prometheus)
-# ==========================================
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Flask API Production', version='1.0.0')
 
-# ==========================================
 # 3. THIẾT LẬP RATE LIMITING
-# ==========================================
-# Lấy Redis URL từ môi trường (hoặc fallback về memory nếu chạy local)
 REDIS_URL = os.getenv("REDIS_URL", "memory://")
 
 limiter = Limiter(
@@ -46,10 +40,9 @@ limiter = Limiter(
     default_limits=["1000 per day", "100 per hour"],
     storage_uri=REDIS_URL
 )
-
-# ==========================================
+ 
 # 4. THIẾT LẬP CIRCUIT BREAKER
-# ==========================================
+
 # Listener để bắn log Alert ngay khi trạng thái mạch thay đổi
 class CircuitBreakerLogger(pybreaker.CircuitBreakerListener):
     def state_change(self, cb, old_state, new_state):
@@ -64,7 +57,7 @@ class CircuitBreakerLogger(pybreaker.CircuitBreakerListener):
 external_api_breaker = pybreaker.CircuitBreaker(
     fail_max=3, 
     reset_timeout=15,
-    listeners=[CircuitBreakerLogger()] # Gắn listener vào
+    listeners=[CircuitBreakerLogger()] 
 )
 
 @external_api_breaker
@@ -75,9 +68,7 @@ def call_unstable_external_service():
     time.sleep(0.5) 
     return {"data": "Dữ liệu từ external service"}
 
-# ==========================================
 # 5. ĐỊNH NGHĨA CÁC ENDPOINT (ROUTES)
-# ==========================================
 @app.route('/api/health')
 @limiter.exempt 
 def health_check():
