@@ -8,12 +8,15 @@ from prometheus_flask_exporter import PrometheusMetrics
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import pybreaker
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Khởi tạo Flask app ĐẦU TIÊN
 app = Flask(__name__)
 
-# 1. THIẾT LẬP LOGGING
+# BÁO CHO FLASK BIẾT NÓ ĐANG ĐỨNG SAU PROXY (Cloudflare/Render) ĐỂ LẤY IP THẬT
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
+# 1. THIẾT LẬP LOGGING
 logHandler = logging.StreamHandler()
 formatter = jsonlogger.JsonFormatter('%(asctime)s %(levelname)s %(name)s %(message)s')
 logHandler.setFormatter(formatter)
@@ -42,8 +45,6 @@ limiter = Limiter(
 )
  
 # 4. THIẾT LẬP CIRCUIT BREAKER
-
-# Listener để bắn log Alert ngay khi trạng thái mạch thay đổi
 class CircuitBreakerLogger(pybreaker.CircuitBreakerListener):
     def state_change(self, cb, old_state, new_state):
         msg = f"Circuit Breaker state changed from {old_state.name} to {new_state.name}"
@@ -66,7 +67,7 @@ def call_unstable_external_service():
     if random.choice([True, False]):
         raise Exception("External service timeout or 500 Error!")
     time.sleep(0.5) 
-    return {"data": "Dữ liệu từ external service"}
+    return {"data": "Data from external service"}
 
 # 5. ĐỊNH NGHĨA CÁC ENDPOINT (ROUTES)
 @app.route('/api/health')
@@ -74,8 +75,18 @@ def call_unstable_external_service():
 def health_check():
     return jsonify({"status": "healthy"}), 200
 
+# API MỚI: DEMO RATE LIMIT
+@app.route('/api/test-limit', methods=['GET'])
+@limiter.limit("5 per minute")
+def test_limit():
+    logger.info("Processing GET /api/test-limit - Test Rate Limiting", extra={
+        "client_ip": request.remote_addr
+    })
+    return jsonify({"message": "API is stable, just for Rate Limit tests"}), 200
+
+# API CŨ: CHUYÊN ĐỂ DEMO CIRCUIT BREAKER (Tắt Rate limit đi để dễ F5)
 @app.route('/api/data', methods=['GET'])
-@limiter.limit("5 per minute") 
+@limiter.exempt # Tắt Rate Limit ở đây để F5 thoải mái không bị dính 429
 def get_data():
     trace_id = request.headers.get("X-Correlation-ID", "unknown")
     
