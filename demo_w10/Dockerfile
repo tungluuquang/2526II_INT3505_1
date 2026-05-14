@@ -3,7 +3,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy riêng folder demo_w10
-COPY . .
+COPY demo_w10/ .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
