@@ -4,13 +4,7 @@ from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 
-# --- HÀM HỖ TRỢ CHO USER-BASED ---
 def get_user_id():
-    """
-    Hàm này trích xuất User ID từ request (ví dụ: từ Header, Token, hoặc Session).
-    Ở demo này, mình lấy từ header 'X-User-ID'. 
-    Nếu không có, fallback (rơi về) địa chỉ IP.
-    """
     return request.headers.get("X-User-ID", get_remote_address())
 
 # --- KHỞI TẠO LIMITER ---
@@ -39,7 +33,7 @@ def login():
 
 # 4. USER-BASED
 @app.route("/api/profile")
-@limiter.limit("5 per minute", key_func=get_user_id) # Dùng hàm get_user_id thay vì IP
+@limiter.limit("5 per minute", key_func=get_user_id)
 def profile():
     user_id = request.headers.get("X-User-ID", "Khách")
     return jsonify({
