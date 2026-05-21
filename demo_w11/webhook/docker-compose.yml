@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  webhook-server:
+    build: ./webhook-server
+    container_name: webhook-server
+    ports:
+      - "5000:5000"
+    environment:
+      - RABBIT_URL=amqp://admin:admin@rabbitmq:5672/
+      - WEBHOOK_SECRET=webhook_secret
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./webhook-server:/app
+
+  notification-worker:
+    build: ./notification-worker
+    container_name: notification-worker
+    environment:
+      - RABBIT_URL=amqp://admin:admin@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./notification-worker:/app
+
+networks:
+  default:
+    name: my_network
