@@ -1,3 +1,4 @@
 /openapi-comparison/node_modules/
 /openapi-comparison/venv/
 venv/
+__pycache__
