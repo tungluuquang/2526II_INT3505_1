@@ -4,6 +4,7 @@ import json
 import os
 import hmac
 import hashlib
+import time
 
 class Config:
     RABBIT_URL = os.getenv("RABBIT_URL")
@@ -30,22 +31,41 @@ def verify_signature(secret: str, payload: bytes, signature: str) -> bool:
 
     return hmac.compare_digest(expected, signature or "")
 
-
 class RabbitMQClient:
     def __init__(self, url: str):
         self.params = pika.URLParameters(url)
         self.params.heartbeat = 600
         self.params.blocked_connection_timeout = 300
 
-        self.connection = pika.BlockingConnection(self.params)
-        self.channel = self.connection.channel()
+        self.connection = None
+        self.channel = None
 
-        self.channel.queue_declare(
-            queue=Config.QUEUE_NAME,
-            durable=True
-        )
+        self.connect()
+
+    def connect(self):
+        for i in range(10):
+            try:
+                self.connection = pika.BlockingConnection(self.params)
+                self.channel = self.connection.channel()
+
+                self.channel.queue_declare(
+                    queue=Config.QUEUE_NAME,
+                    durable=True
+                )
+
+                print("RabbitMQ connected")
+                return
+
+            except Exception as e:
+                print(f"[RabbitMQ] retry {i+1}/10 failed: {e}")
+                time.sleep(3)
+
+        raise Exception("Cannot connect to RabbitMQ")
 
     def publish(self, message: dict):
+        if not self.channel:
+            self.connect()
+
         self.channel.basic_publish(
             exchange="",
             routing_key=Config.QUEUE_NAME,
@@ -57,9 +77,16 @@ class RabbitMQClient:
         if self.connection and self.connection.is_open:
             self.connection.close()
 
+rabbit_client = None
 
-rabbit_client = RabbitMQClient(Config.RABBIT_URL)
+def get_rabbit():
+    global rabbit_client
+    if rabbit_client is None:
+        rabbit_client = RabbitMQClient(Config.RABBIT_URL)
+    return rabbit_client
 
+
+# Flask App
 app = Flask(__name__)
 
 
@@ -76,7 +103,7 @@ def handle_webhook():
     except json.JSONDecodeError:
         abort(400, description="Invalid JSON payload")
 
-    rabbit_client.publish(payload)
+    get_rabbit().publish(payload)
 
     return jsonify({"status": "queued"}), 200
 
@@ -86,13 +113,6 @@ def health():
     return jsonify({"status": "ok"}), 200
 
 
-@app.teardown_appcontext
-def cleanup(exception=None):
-    pass  # giữ connection alive cho app lifecycle
-
-
+# Run
 if __name__ == "__main__":
-    try:
-        app.run(host="0.0.0.0", port=5000, debug=True)
-    finally:
-        rabbit_client.close()
+    app.run(host="0.0.0.0", port=5000, debug=True)

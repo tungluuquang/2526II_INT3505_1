@@ -10,10 +10,39 @@ from flask_limiter.util import get_remote_address
 import pybreaker
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+# --- CẤU HÌNH OPENTELEMETRY ĐỂ XUẤT TRACE RA UI (JAEGER/SIGNOZ) ---
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+# 0. THIẾT LẬP TRACER PROVIDER VÀ EXPORTER
+# Định danh service trên giao diện UI
+resource = Resource(attributes={
+    SERVICE_NAME: "flask-production-api"
+})
+
+provider = TracerProvider(resource=resource)
+trace.set_tracer_provider(provider)
+
+# Gửi dữ liệu qua OTLP HTTP (Mặc định Jaeger nghe ở port 4318)
+otlp_endpoint = os.getenv("OTLP_ENDPOINT", "http://localhost:4318/v1/traces")
+otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint)
+
+# Sử dụng BatchSpanProcessor để tối ưu hiệu năng (gửi gom cụm thay vì gửi lẻ tẻ)
+span_processor = BatchSpanProcessor(otlp_exporter)
+provider.add_span_processor(span_processor)
+
+tracer = trace.get_tracer(__name__)
+
 # Khởi tạo Flask app ĐẦU TIÊN
 app = Flask(__name__)
 
-# BÁO CHO FLASK BIẾT NÓ ĐANG ĐỨNG SAU PROXY (Cloudflare/Render) ĐỂ LẤY IP THẬT
+# Tự động ghi lại trace cho các request của Flask
+FlaskInstrumentor().instrument_app(app)
+
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 # 1. THIẾT LẬP LOGGING
@@ -84,30 +113,56 @@ def test_limit():
     })
     return jsonify({"message": "API is stable, just for Rate Limit tests"}), 200
 
-# API CŨ: CHUYÊN ĐỂ DEMO CIRCUIT BREAKER (Tắt Rate limit đi để dễ F5)
 @app.route('/api/data', methods=['GET'])
-@limiter.exempt # Tắt Rate Limit ở đây để F5 thoải mái không bị dính 429
+@limiter.exempt 
 def get_data():
     trace_id = request.headers.get("X-Correlation-ID", "unknown")
-    
-    logger.info("Processing GET /api/data", extra={
-        "client_ip": request.remote_addr,
-        "trace_id": trace_id
-    })
 
-    try:
-        result = call_unstable_external_service()
-        return jsonify({"status": "success", "result": result}), 200
-        
-    except pybreaker.CircuitBreakerError:
-        logger.error("Circuit breaker is OPEN. Fast failing request.")
-        return jsonify({
-            "error": "Service temporarily unavailable due to high failure rate. Please try again later."
-        }), 503
-        
-    except Exception as e:
-        logger.error(f"Internal Error: {str(e)}", exc_info=True)
-        return jsonify({"error": "Internal server error"}), 500
+    # Tạo một custom span để theo dõi chi tiết quá trình xử lý logic bên trong
+    with tracer.start_as_current_span("get_data_logic") as span:
+        span.set_attribute("client.ip", request.remote_addr)
+        span.set_attribute("trace.manual_id", trace_id)
+
+        logger.info("Processing GET /api/data", extra={
+            "client_ip": request.remote_addr,
+            "trace_id": trace_id
+        })
+
+        try:
+            # Gọi service bên ngoài (được bọc bởi Circuit Breaker)
+            result = call_unstable_external_service()
+
+            # trace success
+            span.set_attribute("external.status", "success")
+
+            return jsonify({
+                "status": "success",
+                "result": result,
+                "trace_id": trace_id
+            }), 200
+
+        except pybreaker.CircuitBreakerError:
+            span.set_attribute("circuit_breaker", "OPEN")
+            span.set_status(trace.status.Status(trace.status.StatusCode.ERROR))
+            
+            logger.error("Circuit breaker is OPEN. Fast failing request.")
+
+            return jsonify({
+                "error": "Service temporarily unavailable due to high failure rate.",
+                "trace_id": trace_id
+            }), 503
+
+        except Exception as e:
+            span.record_exception(e)
+            span.set_status(trace.status.Status(trace.status.StatusCode.ERROR))
+
+            logger.error(f"Internal Error: {str(e)}", exc_info=True)
+
+            return jsonify({
+                "error": "Internal server error",
+                "trace_id": trace_id
+            }), 500
 
 if __name__ == '__main__':
+    # Lưu ý: Port 5000 cho Flask app
     app.run(host='0.0.0.0', port=5000)
